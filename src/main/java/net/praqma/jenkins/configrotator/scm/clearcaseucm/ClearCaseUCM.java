@@ -181,7 +181,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
                 logger.fine( String.format("Created view %s", view) );
                 configuration.setView( view );
             } catch( Exception e ) {
-                out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view" );                
+                out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view" );
+                out.println( ConfigurationRotator.LOGGERNAME + "Cause is: "+e.getMessage());
                 ConfigurationRotatorException ex = new ConfigurationRotatorException( "Unable to create view", e ); 
                 logger.log(Level.SEVERE, "Unable to create view in createWorkspace()", ex);
                 throw ex;
