@@ -74,8 +74,8 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
                 Rebase rb = new Rebase(devStream);                
                 out.println(ConfigurationRotator.LOGGERNAME + "Rebasing stream to " + devStream.getNormalizedName());
                 rb.setViewTag(viewtag).addBaselines(baselines).dropFromStream().rebase(true, true);                
-            } catch (RebaseException e) {                
-                throw new IOException("Failed to rebase the current stream " + devStream, e);
+            } catch (RebaseException e) {
+                throw new IOException(e.getMessage(), e);
             } catch (ClearCaseException reb) {
                 throw new IOException("Could not load " + devStream, reb);
             } 

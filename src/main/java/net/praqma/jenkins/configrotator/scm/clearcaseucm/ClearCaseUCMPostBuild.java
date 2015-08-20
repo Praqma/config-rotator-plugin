@@ -25,7 +25,6 @@ public class ClearCaseUCMPostBuild extends AbstractPostConfigurationRotator {
                     String currentBaseline = ((ClearCaseUCMConfigurationComponent) current.getChangedComponent()).getBaseline().getNormalizedName();
                     ConfigurationRotatorBuildAction previous = rotator.getAcrs().getLastResult(action.getBuild().getProject(), ClearCaseUCM.class);
                     String previousBaseline = ((ClearCaseUCMConfiguration) previous.getConfiguration()).getList().get(currentComponentIndex).getBaseline().getNormalizedName();
-
                     action.setDescription(String.format("Baseline changed from %s to %s", previousBaseline, currentBaseline));
                 }
             }
