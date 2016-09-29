@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public abstract class ConfigurationRotatorFeedAction implements Action {
-    
+
     @Override
     public String getIconFileName() {
         return null;
@@ -60,15 +60,11 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
     }
 
     public ArrayList<File> getComponents( FileFilter filter ) {
-
-        ArrayList<File> list = new ArrayList<File>();
-
-        File path = new File( ConfigurationRotator.getFeedPath(), getComponentName() );
-
-        for( File f : path.listFiles( filter ) ) {
-            list.add( f );
+        ArrayList<File> list = new ArrayList<>();
+        if(filter != null) {
+            File path = new File( ConfigurationRotator.getFeedPath(), getComponentName() );
+            list.addAll(Arrays.asList(path.listFiles( filter )));
         }
-
         return list;
     }
 

@@ -12,6 +12,7 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
 
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -53,7 +54,9 @@ public class ConfigurationRotatorPublisher extends Notifier {
             ConfigurationRotatorBuildAction action = build.getAction(ConfigurationRotatorBuildAction.class);
             if (action != null) {
 
-                if (build.getResult().isBetterOrEqualTo(Result.SUCCESS)) {
+                Result r = build.getResult();
+
+                if (r != null && r.isBetterOrEqualTo(Result.SUCCESS)) {
                     action.setResult(ResultType.COMPATIBLE);
                 } else {
                     action.setResult(ResultType.INCOMPATIBLE);
@@ -65,9 +68,15 @@ public class ConfigurationRotatorPublisher extends Notifier {
                 if(Jenkins.getInstance().getPlugin("compatibility-action-storage") != null) {
                     if(scmConverted.getAcrs().isContribute()) {
                         try {
-                            CompatabilityCompatible compatible = scmConverted.getAcrs().getConverter().convert(build.getAction(ConfigurationRotatorBuildAction.class));
-                            listener.getLogger().println(ConfigurationRotator.LOGGERNAME + "Preparing to contribute data about compatability");
-                            build.getWorkspace().act(new RemoteCompatabilityContributor(compatible, GlobalConfiguration.all().get(CompatibilityDataPlugin.class).getProvider(), listener));
+                            FilePath p = build.getWorkspace();
+                            if(p != null) {
+                                CompatabilityCompatible compatible = scmConverted.getAcrs().getConverter().convert(build.getAction(ConfigurationRotatorBuildAction.class));
+                                listener.getLogger().println(ConfigurationRotator.LOGGERNAME + "Preparing to contribute data about compatability");
+                                CompatibilityDataPlugin cp = GlobalConfiguration.all().get(CompatibilityDataPlugin.class);
+                                if(cp != null) {
+                                    p.act(new RemoteCompatabilityContributor(compatible, cp.getProvider(), listener));
+                                }
+                            }
                         } catch (CompatibilityDataException dataex) {
                             listener.getLogger().println(dataex.getMessage());
                         } catch (Exception ex) {

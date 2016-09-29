@@ -114,7 +114,7 @@ public class ConfigurationRotator extends SCM {
             LOGGER.fine( "Was reconfigured: " + reconfigure );
         }
 
-        AbstractConfigurationRotatorSCM.Performer<AbstractConfiguration<?>> performer = acrs.getPerform( build, launcher, workspace, listener );
+        AbstractConfigurationRotatorSCM.Performer<AbstractConfiguration<?>> performer = acrs.getPerform( build, workspace, listener );
         ConfigurationRotatorBuildAction lastAction = acrs.getLastResult( build.getProject(), performer.getSCMClass() );
         AbstractConfiguration<?> configuration = null;
 
@@ -233,7 +233,7 @@ public class ConfigurationRotator extends SCM {
             LOGGER.fine( "Was reconfigured: " + reconfigure );
         }
 
-        AbstractConfigurationRotatorSCM.Poller poller = acrs.getPoller(project, launcher, workspace, listener );
+        AbstractConfigurationRotatorSCM.Poller poller = acrs.getPoller(project, workspace, listener );
 
         ConfigurationRotatorBuildAction lastAction = acrs.getLastResult( project, null );
         DiedBecauseAction dieaction = acrs.getLastDieAction(project);

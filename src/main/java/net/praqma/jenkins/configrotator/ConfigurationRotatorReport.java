@@ -47,7 +47,7 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
 
     @Override
     public synchronized List<Action> getActions() {
-        List<Action> actions = new ArrayList<Action>();
+        List<Action> actions = new ArrayList<>();
         actions.add(new GitFeedAction());
         actions.add(new ClearCaseUCMFeedAction());
         return actions;
@@ -69,16 +69,16 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
         return url.replaceAll("[^a-zA-Z0-9]", "_");
     }
 
-    public static String FeedFrontpageUrl() {
+    public static String feedFrontpageUrl() {
         return getRootUrl() + ConfigurationRotator.URL_NAME + "/";
     }
 
-    public static String GenerateJobUrl(AbstractBuild<?, ?> build) {
+    public static String generateJobUrl(AbstractBuild<?, ?> build) {
         return getRootUrl() + build.getUrl();
     }
 
     public static String getRootUrl() {
-        if (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) {
+        if (Jenkins.getInstance().getRootUrl() == null) {
             return "http://localhost:8080/";
         } else {
             return Jenkins.getInstance().getRootUrl();
