@@ -12,6 +12,7 @@ import hudson.model.TaskListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -378,7 +379,12 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         @Override
         protected List<ConfigRotatorChangeLogEntry> getChangeLogEntries( ClearCaseUCMConfiguration configuration, ClearCaseUCMConfigurationComponent component ) throws ConfigurationRotatorException {
             try {
-                return build.getWorkspace().act( new ClearCaseGetBaseLineCompare(listener, configuration, component ) );
+                FilePath ws = build.getWorkspace();
+                if(ws != null) {
+                    return ws.act( new ClearCaseGetBaseLineCompare(listener, configuration, component ) );
+                } else {
+                    return Collections.EMPTY_LIST;
+                }
             } catch( Exception e ) {
                 throw new ConfigurationRotatorException( e );
             }

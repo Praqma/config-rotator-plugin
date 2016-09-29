@@ -20,17 +20,18 @@ import net.praqma.jenkins.configrotator.scm.contribute.dto.ClearCaseUCMConfigura
  * @author Mads
  */
 public class ConfigRotatorClearCaseConverterImpl implements ConfigRotatorCompatabilityConverter<ConfigurationRotatorBuildAction> {
-    
-    public ConfigRotatorClearCaseConverterImpl() { } 
-    
+
+    public ConfigRotatorClearCaseConverterImpl() { }
+
     @Override
     public CompatabilityCompatible convert(ConfigurationRotatorBuildAction t) {
         ClearCaseUCMConfiguration ccucmcomp = t.getConfiguration();
-        ClearCaseUCMConfigurationDTO config = ClearCaseUCMConfigurationDTO.fromConfiguration(ccucmcomp);         
-        boolean success = t.getBuild().getResult().isBetterOrEqualTo(Result.SUCCESS);
-        
+        ClearCaseUCMConfigurationDTO config = ClearCaseUCMConfigurationDTO.fromConfiguration(ccucmcomp);
+        Result r = t.getBuild().getResult();
+        boolean success = r != null && r.isBetterOrEqualTo(Result.SUCCESS);
+
         ClearCaseUCMConfigurationDTO configComponent = new ClearCaseUCMConfigurationDTO();
-        
+
         //This is a new configuration. We need to add all components as changed
         if(ccucmcomp.getChangedComponents().isEmpty()) {
             configComponent.addAll(config);
@@ -41,8 +42,8 @@ public class ConfigRotatorClearCaseConverterImpl implements ConfigRotatorCompata
                 configComponent.add(ClearCaseUCMConfigurationComponentDTO.fromComponent((ClearCaseUCMConfigurationComponent)abcomp));
             }
         }
-        
-        ClearcaseUCMCompatability comp = new ClearcaseUCMCompatability(configComponent, Calendar.getInstance().getTime(), t.getBuild().getProject().getName(), success, config);         
+
+        ClearcaseUCMCompatability comp = new ClearcaseUCMCompatability(configComponent, Calendar.getInstance().getTime(), t.getBuild().getProject().getName(), success, config);
         return comp;
-    }     
+    }
 }

@@ -9,6 +9,7 @@ import java.io.IOException;
 
 public class GitConfigurationComponent extends AbstractConfigurationComponent {
 
+    static final long serialVersionUID = 5857L;
     private transient RevCommit commit;
     private String commitId;
     private String name;
