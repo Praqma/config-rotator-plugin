@@ -3,7 +3,6 @@ package net.praqma.jenkins.configrotator;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.Result;
-import hudson.model.TaskListener;
 import hudson.scm.SCM;
 import org.apache.commons.io.FileUtils;
 
@@ -73,11 +72,11 @@ public class SystemValidator<T extends AbstractTarget> {
     }
 
     public void validate() {
-
+        
         logger.info( "-----= Validating build: " + this.build.getProject().getDisplayName() + " : " + this.build.getDisplayName() + " =-----" );
 
         try {
-
+            
             if( this.checkExpectedResult ) {
                 logger.info( "Expected result must be " + this.expectedResult + " (" + build.getResult() + ")" );
                 assertThat( "Validating expected result", build.getResult(), is( this.expectedResult ) );
@@ -89,8 +88,8 @@ public class SystemValidator<T extends AbstractTarget> {
             }
 
             if( this.checkWasReconfigured ) {
-                logger.info( "Reconfigured must be " + this.wasReconfigured + " (" + cr.getAcrs().wasReconfigured( build.getProject(), TaskListener.NULL ) + ")" );
-                assertThat( "Validating reconfiguration", cr.getAcrs().wasReconfigured( build.getProject(), TaskListener.NULL ), is( this.wasReconfigured ) );
+                logger.info( "Reconfigured must be " + this.wasReconfigured + " (" + cr.getAcrs().wasReconfigured( build.getProject() ) + ")" );
+                assertThat( "Validating reconfiguration", cr.getAcrs().wasReconfigured( build.getProject() ), is( this.wasReconfigured ) );
             }
 
             if( this.checkTargets ) {
@@ -130,7 +129,7 @@ public class SystemValidator<T extends AbstractTarget> {
                     fail( e.getMessage() );
                 }
             }
-
+            
         } catch(AssertionError assertError) {
             logger.info("-----=Console output for failed system=-----");
             try {
@@ -142,12 +141,7 @@ public class SystemValidator<T extends AbstractTarget> {
         }
 
         logger.info( "Successfully validated system" );
-        logger.info("-----=Console output for validated system=-----");
-        try {
-            String console = FileUtils.readFileToString(build.getLogFile());
-            logger.info(console);
-        } catch (Exception ex) { }
-        logger.info("-----=End console output for validated system=-----");
+
         logger.info( "-----= Successfully validated system =-----" );
         logger.info( "" );
     }
@@ -244,10 +238,10 @@ public class SystemValidator<T extends AbstractTarget> {
             for( Element element : elements ) {
                 if( element.mustExist ) {
                     logger.info( "Path must have " + element );
-                    assertTrue( "The path " + path + " does not have " + element, new FilePath( path, element.element ).exists() );
+                    assertTrue( "The path " + path + " does not have " + element, new FilePath( path, element.element ).exists() );                    
                 } else {
                     logger.info( "Path must NOT have " + element );
-                    assertFalse( "The path " + path + " does have " + element, new FilePath( path, element.element ).exists() );
+                    assertFalse( "The path " + path + " does have " + element, new FilePath( path, element.element ).exists() );                    
                 }
             }
         }

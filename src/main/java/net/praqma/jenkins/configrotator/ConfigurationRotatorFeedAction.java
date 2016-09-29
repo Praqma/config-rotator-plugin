@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public abstract class ConfigurationRotatorFeedAction implements Action {
-
+    
     @Override
     public String getIconFileName() {
         return null;
@@ -38,7 +38,7 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
         return fileName.substring( 0, fileName.lastIndexOf( "." ) );
     }
 
-    public List<File> getComponents() {
+    public ArrayList<File> getComponents() {
         FileFilter xmlFilter = new FileFilter() {
             @Override
             public boolean accept(File file) {
@@ -59,22 +59,23 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
         return title;
     }
 
-    public List<File> getComponents( FileFilter filter ) {
-        List<File> list = new ArrayList<>();
+    public ArrayList<File> getComponents( FileFilter filter ) {
+
+        ArrayList<File> list = new ArrayList<File>();
 
         File path = new File( ConfigurationRotator.getFeedPath(), getComponentName() );
-        if( filter != null) {
-            File[] flist = path.listFiles( filter );
-            if(flist != null) {
-                list = Arrays.asList(flist);
-            }
+
+        for( File f : path.listFiles( filter ) ) {
+            list.add( f );
         }
+
         return list;
     }
 
     public void doFeed( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
         String component = req.getParameter( "component" );
         File file = new File( new File( ConfigurationRotator.getFeedPath(), getComponentName() ), component + ".xml" );
+
         if( file.exists() ) {
             rsp.serveFile( req, FileUtils.openInputStream( file ), file.lastModified(), file.getTotalSpace(), file.getName() );
         } else {

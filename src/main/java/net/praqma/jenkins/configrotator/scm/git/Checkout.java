@@ -8,6 +8,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import org.eclipse.jgit.lib.Ref;
 import org.jenkinsci.remoting.RoleChecker;
 
 /**
@@ -34,8 +35,9 @@ public class Checkout implements FilePath.FileCallable<Boolean> {
         Repository repo = builder.setGitDir( new File( local, ".git" ) ).readEnvironment().findGitDir().build();
         org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git( repo );
 
+
         try {
-            git.checkout().setName( branch ).setAllPaths( true ).setForce( true ).setStartPoint( commitId ).call();
+            Ref r = git.checkout().setName( branch ).setAllPaths( true ).setForce( true ).setStartPoint( commitId ).call();
         } catch( GitAPIException e ) {
             throw new IOException( e );
         } finally {

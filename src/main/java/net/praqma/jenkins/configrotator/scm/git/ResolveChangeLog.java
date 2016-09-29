@@ -37,7 +37,7 @@ public class ResolveChangeLog implements FilePath.FileCallable<ConfigRotatorChan
 
         File local = new File( workspace, name );
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
-        List<DiffEntry> diffs = null;
+        List<DiffEntry> diffs = new ArrayList<DiffEntry>();
 
         //Resources that NEEDS to be closed
         Repository repo = null;
@@ -74,10 +74,8 @@ public class ResolveChangeLog implements FilePath.FileCallable<ConfigRotatorChan
         }
 
         ConfigRotatorChangeLogEntry entry = new ConfigRotatorChangeLogEntry( commit.getFullMessage(), commit.getAuthorIdent().getName(), new ArrayList<ConfigRotatorVersion>());
-        if (diffs != null) {
-            for( DiffEntry diff : diffs ) {
-                entry.addVersion( new ConfigRotatorVersion( diff.getNewPath(), "", commit.getAuthorIdent().getName() ) );
-            }
+        for( DiffEntry diff : diffs ) {
+            entry.addVersion( new ConfigRotatorVersion( diff.getNewPath(), "", commit.getAuthorIdent().getName() ) );
         }
 
         return entry;

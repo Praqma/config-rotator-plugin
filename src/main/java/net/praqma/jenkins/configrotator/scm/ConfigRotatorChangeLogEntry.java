@@ -13,8 +13,7 @@ import java.util.Collection;
  */
 public class ConfigRotatorChangeLogEntry extends Entry implements Serializable {
 
-    protected transient ConfigRotatorChangeLogSet parent;
-    private static final long serialVersionUID = 10239349L;
+    protected ConfigRotatorChangeLogSet parent;
     private String commitMessage;
     private String user;
     private ArrayList<ConfigRotatorVersion> versions;
@@ -23,7 +22,7 @@ public class ConfigRotatorChangeLogEntry extends Entry implements Serializable {
      * Default constructor
      */
     public ConfigRotatorChangeLogEntry() {
-        versions = new ArrayList<>();
+        versions = new ArrayList<ConfigRotatorVersion>();
     }
 
     public ConfigRotatorChangeLogEntry(String commitMessage, String user, ArrayList<ConfigRotatorVersion> versions) {
@@ -39,7 +38,7 @@ public class ConfigRotatorChangeLogEntry extends Entry implements Serializable {
 
     @Override
     public Collection<String> getAffectedPaths() {
-        ArrayList<String> strings = new ArrayList<>();
+        ArrayList<String> strings = new ArrayList<String>();
         for (ConfigRotatorVersion ccv : getVersions()) {
             strings.add(ccv.getFile());
         }
@@ -94,7 +93,6 @@ public class ConfigRotatorChangeLogEntry extends Entry implements Serializable {
         return (T) parent;
     }
 
-    @Override
     public String toString() {
         return user + " - " + commitMessage;
     }

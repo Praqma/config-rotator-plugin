@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author wolfgang
  */
-public abstract class AbstractConfigurationComponent implements Serializable, Feedable, Cloneable {
+public abstract class AbstractConfigurationComponent implements Serializable, Feedable {
     protected boolean changedLast = false;
     protected boolean fixed = false;
 
@@ -55,7 +55,7 @@ public abstract class AbstractConfigurationComponent implements Serializable, Fe
 
         return feed;
     }
-
+    
     @Override
     public Entry getFeedEntry( AbstractBuild<?, ?> build, Date updated ) {
         ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
@@ -75,9 +75,9 @@ public abstract class AbstractConfigurationComponent implements Serializable, Fe
 
         entry.content = configuration.getDescription( action );
         Html.Break br1 = new Html.Break();
-        Html.Anchor linkFeeds = new Html.Anchor( ConfigurationRotatorReport.feedFrontpageUrl(), "Click here for a list of available feeds" );
+        Html.Anchor linkFeeds = new Html.Anchor( ConfigurationRotatorReport.FeedFrontpageUrl(), "Click here for a list of available feeds" );
         Html.Break br2 = new Html.Break();
-        Html.Anchor joblink = new Html.Anchor( ConfigurationRotatorReport.generateJobUrl( build ), "Click here to go to the build that created this feed" );
+        Html.Anchor joblink = new Html.Anchor( ConfigurationRotatorReport.GenerateJobUrl( build ), "Click here to go to the build that created this feed" );
 
         entry.content += configuration.toHtml() + br1 + linkFeeds + br2 + joblink;
 

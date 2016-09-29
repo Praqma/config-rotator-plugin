@@ -15,7 +15,7 @@ import java.util.List;
 import net.praqma.jenkins.configrotator.scm.contribute.ConfigRotatorCompatabilityConverter;
 
 public class FakeSCM extends AbstractConfigurationRotatorSCM {
-
+    
     @Override
     public String getName() {
         return "fakeSCM";
@@ -25,7 +25,7 @@ public class FakeSCM extends AbstractConfigurationRotatorSCM {
     public ConfigRotatorCompatabilityConverter getConverter() {
         return null;
     }
-
+    
     @Override
     public <TT extends AbstractTarget> void setTargets( List<TT> targets ) {
     }
@@ -36,19 +36,19 @@ public class FakeSCM extends AbstractConfigurationRotatorSCM {
     }
 
     @Override
-    public Poller getPoller( AbstractProject<?, ?> project, FilePath workspace, TaskListener listener ) {
-        return new Poller( project, workspace, listener );
+    public Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) {
+        return new Poller( project, launcher, workspace, listener );
     }
 
     @Override
-    public Performer getPerform( AbstractBuild<?, ?> build, FilePath workspace, BuildListener listener ) throws IOException {
-        return new FakePerformer(build,  workspace, listener);
+    public Performer getPerform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException {
+        return new FakePerformer(build, launcher, workspace, listener);
     }
 
     public class FakePerformer extends Performer<FakeConfiguration> {
 
-        public FakePerformer( AbstractBuild<?, ?> build, FilePath workspace, BuildListener listener ) {
-            super( build, workspace, listener );
+        public FakePerformer( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) {
+            super( build, launcher, workspace, listener );
         }
 
         @Override
@@ -121,13 +121,12 @@ public class FakeSCM extends AbstractConfigurationRotatorSCM {
     }
 
     @Override
-    public AbstractConfiguration setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
+    public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
         //To change body of implemented methods use File | Settings | File Templates.
-        return null;
     }
 
     @Override
-    public boolean wasReconfigured( AbstractProject<?, ?> project, TaskListener listener) {
+    public boolean wasReconfigured( AbstractProject<?, ?> project ) {
         if(project.getLastBuild() == null) {
             return true;
         }

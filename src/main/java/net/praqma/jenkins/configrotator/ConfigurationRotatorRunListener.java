@@ -7,15 +7,15 @@ import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.Writer;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.praqma.util.xml.feed.*;
-import org.apache.commons.io.output.FileWriterWithEncoding;
 
 /**
  * <p>
@@ -70,7 +70,7 @@ import org.apache.commons.io.output.FileWriterWithEncoding;
 @Extension
 public class ConfigurationRotatorRunListener extends RunListener<Run> {
 
-    private static Logger LOGGER = Logger.getLogger( ConfigurationRotatorReport.class.getName() );
+    private static Logger logger = Logger.getLogger( ConfigurationRotatorReport.class.getName() );
 
     private TaskListener localListener;
 
@@ -139,7 +139,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         writeFeedToFile( feed, feedFile );
                     }
                 } catch( Exception fe ) {
-                    LOGGER.log( Level.SEVERE, "Feed error", fe );
+                    logger.log( Level.SEVERE, "Feed error", fe );
                     localListener.getLogger().println( "ConfigRotator RunListener caught excetption. Trace written to log.");
                 }
             }
@@ -157,7 +157,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
      * @throws FeedException when error in feeed
      */
     private void writeFeedToFile( Feed feed, File feedFile ) throws FeedException {
-
+        Writer writer = null;
         try {
             if( !feedFile.exists() ) {
                 if( !feedFile.getParentFile().exists() ) {
@@ -168,12 +168,20 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                 }
             }
 
-            try(FileWriterWithEncoding writer = new FileWriterWithEncoding( feedFile, Charset.forName("utf-8") )) {
-                writer.write( feed.getXML( new AtomPublisher() ) );
-            }
-
+            writer = new FileWriter( feedFile );
+            writer.write( feed.getXML( new AtomPublisher() ) );
+            writer.close();
         } catch( IOException ex ) {
-            LOGGER.log(Level.SEVERE, "Error while creating feed file",ex);
+            if( writer != null ) {
+                try {
+                    localListener.getLogger().println( "ConfigRotator RunListener - writeFeedToFile: write failed caught IOException meaning feed may not have been written " + " Exception was: " + ex.getMessage() );
+                    writer.close();
+                } catch( IOException ex1 ) {
+                    localListener.getLogger().println( "ConfigRotator RunListener - writeFeedToFile: write.close failed too caught IOException meaning feed may not have been written " + " Exception was: " + ex1.getMessage() );
+                }
+            } else {
+                localListener.getLogger().println( "ConfigRotator RunListener - writeFeedToFile: writer  WAS NULL, caught IOException meaning feed may not have been written " + " Exception was: " + ex.getMessage() );
+            }
         }
     }
 }

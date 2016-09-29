@@ -15,30 +15,32 @@ import org.mongojack.ObjectId;
  * @author Mads
  */
 public class ClearcaseUCMCompatability implements CompatabilityCompatible {
-
-    private String id;
+   
+    private String id; 
+    
     private String jobName;
     private Date registrationDate;
     private int schemaRevision = 1;
+    
+    public final String schemaType = "ccucm";
     private boolean compatible;
-    private String schemaType = "ccucm";
-
+    
     /**
      * The current configuration. And the components(s) that was flipped on run
      */
     private ClearCaseUCMConfigurationDTO component;
     private ClearCaseUCMConfigurationDTO configuration;
-
+    
     public ClearcaseUCMCompatability() { }
-
+    
     public ClearcaseUCMCompatability(ClearCaseUCMConfigurationDTO component, Date registrationDate, String jobName, boolean compatible, ClearCaseUCMConfigurationDTO configuration) {
-        this.registrationDate = (Date)registrationDate.clone();
+        this.registrationDate = registrationDate;
         this.jobName = jobName;
         this.compatible = compatible;
         this.configuration = configuration;
         this.component = component;
     }
-
+    
     @ObjectId
     @JsonProperty("_id")
     public String getId() {
@@ -50,7 +52,7 @@ public class ClearcaseUCMCompatability implements CompatabilityCompatible {
     public void setId(String id) {
         this.id = id;
     }
-
+    
     /**
      * @return the jobName
      */
@@ -128,10 +130,6 @@ public class ClearcaseUCMCompatability implements CompatabilityCompatible {
         return schemaType;
     }
 
-    public void setSchemaType(String schemaType) {
-        this.schemaType = schemaType;
-    }
-
     @Override
     public String toString() {
         return id;
@@ -139,12 +137,12 @@ public class ClearcaseUCMCompatability implements CompatabilityCompatible {
 
     @Override
     public Date getRegistrationDate() {
-        return (Date)registrationDate.clone();
+        return registrationDate;
     }
 
     @Override
     public void setRegistrationDate(Date registrationDate) {
-        this.registrationDate = (Date)registrationDate.clone();
+        this.registrationDate = registrationDate;
     }
-
+    
 }

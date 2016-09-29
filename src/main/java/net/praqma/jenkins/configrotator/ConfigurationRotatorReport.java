@@ -69,16 +69,16 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
         return url.replaceAll("[^a-zA-Z0-9]", "_");
     }
 
-    public static String feedFrontpageUrl() {
+    public static String FeedFrontpageUrl() {
         return getRootUrl() + ConfigurationRotator.URL_NAME + "/";
     }
 
-    public static String generateJobUrl(AbstractBuild<?, ?> build) {
+    public static String GenerateJobUrl(AbstractBuild<?, ?> build) {
         return getRootUrl() + build.getUrl();
     }
 
     public static String getRootUrl() {
-        if (Jenkins.getInstance().getRootUrl() == null) {
+        if (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) {
             return "http://localhost:8080/";
         } else {
             return Jenkins.getInstance().getRootUrl();

@@ -6,16 +6,15 @@ import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GitConfiguration extends AbstractConfiguration<GitConfigurationComponent> implements Cloneable {
+public class GitConfiguration extends AbstractConfiguration<GitConfigurationComponent> {
 
     private static final Logger LOGGER = Logger.getLogger( GitConfiguration.class.getName() );
 
-    private GitConfiguration() { super(); }
+    private GitConfiguration() {}
 
     public GitConfiguration( List<GitTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException {
         for( AbstractTarget t : targets ) {
@@ -40,14 +39,6 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
         for( GitConfigurationComponent c : getList() ) {
             c.checkout( workspace, listener );
         }
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 5;
-        int result = 1;
-        result = result * prime + list.hashCode();
-        return result;
     }
 
     @Override
@@ -79,13 +70,17 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
 
     @Override
     public List<ConfigRotatorChangeLogEntry> difference( GitConfigurationComponent component, GitConfigurationComponent other ) throws ConfigurationRotatorException {
-        return null;
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public GitConfiguration clone() throws CloneNotSupportedException {
-        GitConfiguration n = (GitConfiguration)super.clone();
-        n.list = new ArrayList<>(this.list);
+    public GitConfiguration clone() {
+        GitConfiguration n = new GitConfiguration();
+
+        for( GitConfigurationComponent gc : this.list ) {
+            n.list.add( (GitConfigurationComponent) gc.clone() );
+        }
+
         return n;
     }
 

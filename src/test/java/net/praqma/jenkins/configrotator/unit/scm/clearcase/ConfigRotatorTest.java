@@ -47,13 +47,13 @@ import org.junit.runner.RunWith;
 @RunWith( PowerMockRunner.class )
 @PrepareForTest( ClearCaseUCMConfiguration.class )
 public class ConfigRotatorTest extends TestCase {
-
+	
 	static {
 		Appender appender = new ConsoleAppender();
 		appender.setMinimumLevel( LogLevel.DEBUG );
 		Logger.addAppender( appender );
 	}
-
+	
 	/* Typical jenkins objects */
 	AbstractProject<?, ?> project;
 	AbstractBuild<?, ?> build;
@@ -61,7 +61,7 @@ public class ConfigRotatorTest extends TestCase {
 	TaskListener tasklistener;
 	BuildListener buildlistener;
 	FilePath workspace = new FilePath( new File( "" ) );
-
+	
 	@Before
 	public void initialize() {
 		project = Mockito.mock( FreeStyleProject.class );
@@ -69,7 +69,7 @@ public class ConfigRotatorTest extends TestCase {
 		launcher = Mockito.mock( Launcher.class );
 		tasklistener = Mockito.mock( TaskListener.class );
 		buildlistener = Mockito.mock( BuildListener.class );
-
+		
 		/* Behaviour */
 		Mockito.when( tasklistener.getLogger() ).thenReturn( System.out );
 		Mockito.when( buildlistener.getLogger() ).thenReturn( System.out );
@@ -82,22 +82,22 @@ public class ConfigRotatorTest extends TestCase {
          * We have here a test wherein an action has a null configuration. This should never happen, we should throw an assertionError
          * @throws IOException
          * @throws InterruptedException
-         * @throws ConfigurationRotatorException
+         * @throws ConfigurationRotatorException 
          */
 	@Test(expected = AssertionError.class)
 	public void testWasReconfigured() throws IOException, InterruptedException, ConfigurationRotatorException {
 		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
 		ClearCaseUCM spy = Mockito.spy( ccucm );
-
+		
 		/* ClearCase mock */
 		ConfigurationRotatorBuildAction action = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, null );
-
+		
 		/* Behaviour */
 		Mockito.doReturn( action ).when( spy ).getLastResult( project, ClearCaseUCM.class );
-
-		boolean b = spy.wasReconfigured( project, TaskListener.NULL);
+		
+		boolean b = spy.wasReconfigured( project );
 	}
-
+	
 	@Test
 	public void testWasReconfiguredSize() throws IOException, InterruptedException, ConfigurationRotatorException {
 		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
@@ -105,21 +105,21 @@ public class ConfigRotatorTest extends TestCase {
 		targets.add( new ClearCaseUCMTarget( "bl1", PromotionLevel.INITIAL, false ) );
 		ccucm.targets = targets;
 		ClearCaseUCM spy = Mockito.spy( ccucm );
-
+		
 		/* ClearCase mock */
 		ClearCaseUCMConfiguration ccc = Mockito.mock( ClearCaseUCMConfiguration.class );
 		ConfigurationRotatorBuildAction action = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, ccc );
-
+		
 		/* Behaviour */
 		Mockito.doReturn( action ).when( spy ).getLastResult( project, ClearCaseUCM.class );
                 Mockito.doReturn( new ArrayList<ClearCaseUCMTarget>() ).when( spy ).getCompareTargets(project);
 		//Mockito.doReturn( new ArrayList<ClearCaseUCMConfigurationComponent>() ).when( ccc ).getList();
-
-		boolean b = spy.wasReconfigured( project, TaskListener.NULL );
-
+		
+		boolean b = spy.wasReconfigured( project );
+		
 		assertEquals( true, b );
 	}
-
+	
 	@Test
 	public void testWasReconfiguredNotSame() throws IOException, InterruptedException, ConfigurationRotatorException, UnableToInitializeEntityException {
 		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
@@ -127,21 +127,21 @@ public class ConfigRotatorTest extends TestCase {
 		targets.add( new ClearCaseUCMTarget( "bl1", PromotionLevel.INITIAL, false ) );
 		ccucm.targets = targets;
 		ClearCaseUCM spy = Mockito.spy( ccucm );
-
+		
 		/* ClearCase mock */
 		List<ClearCaseUCMConfigurationComponent> comps = new ArrayList<ClearCaseUCMConfigurationComponent>();
 		comps.add( new ClearCaseUCMConfigurationComponent( Baseline.get( "bl2@\\pvob" ), PromotionLevel.INITIAL, false ) );
 		ClearCaseUCMConfiguration ccc = new ClearCaseUCMConfiguration( comps );
 		ConfigurationRotatorBuildAction action = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, ccc );
-
+		
 		/* Behaviour */
 		Mockito.doReturn( action ).when( spy ).getLastResult( project, ClearCaseUCM.class );
-
-		boolean b = spy.wasReconfigured( project, TaskListener.NULL );
-
+		
+		boolean b = spy.wasReconfigured( project );
+		
 		assertEquals( true, b );
 	}
-
+	
 	@Test
 	public void testWasReconfiguredSame() throws IOException, InterruptedException, ConfigurationRotatorException, UnableToInitializeEntityException {
 		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
@@ -149,22 +149,22 @@ public class ConfigRotatorTest extends TestCase {
 		targets.add( new ClearCaseUCMTarget( "bl1@\\pvob", PromotionLevel.INITIAL, false ) );
 		ccucm.targets = targets;
 		ClearCaseUCM spy = Mockito.spy( ccucm );
-
+		
 		/* ClearCase mock */
 		List<ClearCaseUCMConfigurationComponent> comps = new ArrayList<ClearCaseUCMConfigurationComponent>();
 		comps.add( new ClearCaseUCMConfigurationComponent( Baseline.get( "bl1@\\pvob" ), PromotionLevel.INITIAL, false ) );
 		ClearCaseUCMConfiguration ccc = new ClearCaseUCMConfiguration( comps );
 		ConfigurationRotatorBuildAction action = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, ccc );
-
+		
 		/* Behaviour */
 		Mockito.doReturn( action ).when( spy ).getLastResult( project, ClearCaseUCM.class );
-
-		boolean b = spy.wasReconfigured( project, TaskListener.NULL );
-
+		
+		boolean b = spy.wasReconfigured( project );
+		
 		assertEquals( false, b );
 	}
 
-
+	
 
 
 	@Test( expected=AbortException.class )
@@ -176,10 +176,10 @@ public class ConfigRotatorTest extends TestCase {
         PowerMockito.when( ClearCaseUCMConfiguration.getConfigurationFromTargets( Mockito.anyListOf( ClearCaseUCMTarget.class ), Mockito.any( FilePath.class ), Mockito.any( TaskListener.class) ) ).thenThrow( new ConfigurationRotatorException( "Failing reconfigure" ) );
 
 		spy.reconfigure( workspace, tasklistener );
-
+		
 		fail();
 	}
-
+	
 	/**
 	 * Tests fb case 6168, no new baselines starts an execution.<br>
 	 * Originally, the getLastResult method would return build #01, when it should return build #02.<br>
@@ -188,7 +188,7 @@ public class ConfigRotatorTest extends TestCase {
 	@Test
 	public void testGetLastResult() {
 		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
-
+		
 		/* Initialize builds */
 		/* 01: compatible */
 		AbstractBuild<?, ?> build01 = Mockito.mock( AbstractBuild.class );
@@ -197,7 +197,7 @@ public class ConfigRotatorTest extends TestCase {
 		Mockito.doReturn( action01 ).when( build01 ).getAction( ConfigurationRotatorBuildAction.class );
 		Mockito.doReturn( "01" ).when( build01 ).toString();
 		Mockito.doReturn( null ).when( build01 ).getPreviousNotFailedBuild();
-
+		
 		/* 02: incompatible */
 		AbstractBuild<?, ?> build02 = Mockito.mock( AbstractBuild.class );
 		Mockito.doReturn( build01 ).when( build02 ).getPreviousBuild();
@@ -206,27 +206,27 @@ public class ConfigRotatorTest extends TestCase {
 		Mockito.doReturn( action02 ).when( build02 ).getAction( ConfigurationRotatorBuildAction.class );
 		Mockito.doReturn( "02" ).when( build02 ).toString();
 		Mockito.doReturn( build01 ).when( build02 ).getPreviousNotFailedBuild();
-
+		
 		/* 02: failed, no action(no baselines) */
 		AbstractBuild<?, ?> build03 = Mockito.mock( AbstractBuild.class );
 		Mockito.doReturn( build02 ).when( build03 ).getPreviousBuild();
 		Mockito.doReturn( "03" ).when( build03 ).toString();
 		Mockito.doReturn( build01 ).when( build03 ).getPreviousNotFailedBuild();
-
+		
 		/* Initialize project */
 		AbstractProject<?, ?> project = Mockito.mock( AbstractProject.class );
 		Mockito.doReturn( build03 ).when( project ).getLastCompletedBuild();
-
+		
 		ConfigurationRotatorBuildAction action = ccucm.getLastResult( project, ClearCaseUCM.class );
 		System.out.println( "-----> " + action.getBuild() );
-
+		
 		assertEquals( action02, action );
 	}
-
+	
 	@Test
 	public void testPrint() throws UnableToInitializeEntityException, UnsupportedEncodingException {
 		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
-
+		
 		/* Configuration component 1*/
 		Stream stream1 = Stream.get( "stream1@\\pvob" );
 		Component comp1 = Component.get( "comp1@\\pvob" );
@@ -234,7 +234,7 @@ public class ConfigRotatorTest extends TestCase {
 		Mockito.doReturn( stream1 ).when( bl1 ).getStream();
 		Mockito.doReturn( comp1 ).when( bl1 ).getComponent();
 		Mockito.doReturn( "bl1@\\pvob" ).when( bl1 ).getNormalizedName();
-
+		
 		/* Configuration component 2*/
 		Stream stream2 = Stream.get( "stream2@\\pvob" );
 		Component comp2 = Component.get( "comp2@\\pvob" );
@@ -242,28 +242,28 @@ public class ConfigRotatorTest extends TestCase {
 		Mockito.doReturn( stream2 ).when( bl2 ).getStream();
 		Mockito.doReturn( comp2 ).when( bl2 ).getComponent();
 		Mockito.doReturn( "bl2@\\pvob" ).when( bl2 ).getNormalizedName();
-
+		
 		ClearCaseUCMConfigurationComponent cccc1 = new ClearCaseUCMConfigurationComponent( bl1, PromotionLevel.INITIAL, false );
 		ClearCaseUCMConfigurationComponent cccc2 = new ClearCaseUCMConfigurationComponent( bl2, PromotionLevel.INITIAL, false );
-
+		
 		List<ClearCaseUCMConfigurationComponent> list = new ArrayList<ClearCaseUCMConfigurationComponent>();
 		list.add( cccc1 );
 		list.add( cccc2 );
-
+		
 		ClearCaseUCMConfiguration ccc = new ClearCaseUCMConfiguration( list );
-
+		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream( baos );
-
+		
 		ccucm.printConfiguration( ps, ccc );
-
+		
 		String nl = System.getProperty("line.separator");
 		String content = baos.toString("latin1");
 		String expected = "[ConfigRotator] The configuration is:" + nl + " * component:comp1@\\pvob, stream:stream1@\\pvob, bl1@\\pvob" + nl + " * component:comp2@\\pvob, stream:stream2@\\pvob, bl2@\\pvob" + nl + nl;
-
+		
 		System.out.println( "CONTENT : " + content );
 		System.out.println( "EXPECTED: " + expected );
-
+		
 		assertEquals( expected, content );
 		//assertSame( expected, content );
 	}
