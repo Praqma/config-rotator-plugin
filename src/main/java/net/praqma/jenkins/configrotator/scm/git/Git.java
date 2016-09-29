@@ -1,5 +1,6 @@
 package net.praqma.jenkins.configrotator.scm.git;
 
+import com.jcraft.jsch.Session;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
@@ -23,16 +24,29 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.praqma.jenkins.configrotator.scm.contribute.ConfigRotatorCompatabilityConverter;
+import org.eclipse.jgit.transport.JschConfigSessionFactory;
+import org.eclipse.jgit.transport.OpenSshConfig;
+import org.eclipse.jgit.transport.SshSessionFactory;
 
 public class Git extends AbstractConfigurationRotatorSCM implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger( Git.class.getName() );
 
     private List<GitTarget> targets = new ArrayList<>();
+    private boolean ignoreSsh = false;
 
     @DataBoundConstructor
-    public Git(List<GitTarget> targets) {
+    public Git(List<GitTarget> targets, boolean ignoreSsh) {
         this.targets = targets;
+        this.ignoreSsh = ignoreSsh;
+        if(ignoreSsh) {
+            SshSessionFactory.setInstance(new JschConfigSessionFactory() {
+                @Override
+                protected void configure(OpenSshConfig.Host hc, Session session) {
+                    session.setConfig("StrictHostKeyChecking", "no");
+                }
+            });
+        }
     }
 
     @Override
@@ -53,6 +67,20 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
     @Override
     public ConfigRotatorCompatabilityConverter getConverter() {
         return null;
+    }
+
+    /**
+     * @return the ignoreSsh
+     */
+    public boolean isIgnoreSsh() {
+        return ignoreSsh;
+    }
+
+    /**
+     * @param ignoreSsh the ignoreSsh to set
+     */
+    public void setIgnoreSsh(boolean ignoreSsh) {
+        this.ignoreSsh = ignoreSsh;
     }
 
     public class GitPerformer extends Performer<GitConfiguration> {

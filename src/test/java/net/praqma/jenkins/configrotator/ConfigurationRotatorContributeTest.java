@@ -29,7 +29,7 @@ public class ConfigurationRotatorContributeTest {
 
     @Test
     public void assertConverters() {
-        Git g = new Git(new ArrayList<GitTarget>());
+        Git g = new Git(new ArrayList<GitTarget>(), false);
         assertNull(g.getConverter());
         ClearCaseUCM ucm = new ClearCaseUCM(new PVob("Whoop@\\DeDoop"));
         assertNotNull(ucm.getConverter());

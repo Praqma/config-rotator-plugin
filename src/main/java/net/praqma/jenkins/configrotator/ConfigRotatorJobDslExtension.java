@@ -142,7 +142,7 @@ public class ConfigRotatorJobDslExtension extends ContextExtensionPoint {
         if (scm.equals("git")) {
             GitJobDslContext context = new GitJobDslContext();
             executeInContext(closure, context);
-            Git git = new Git(new ArrayList<GitTarget>());
+            Git git = new Git(new ArrayList<GitTarget>(), false);
             git.setTargets(context.targets);
             git.setUseNewest(false);
             acrs = git;
