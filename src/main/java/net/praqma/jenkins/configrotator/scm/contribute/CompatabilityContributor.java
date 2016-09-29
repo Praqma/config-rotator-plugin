@@ -40,10 +40,11 @@ public class CompatabilityContributor implements Callable<Boolean, Compatibility
             //Only add if the action is not 'Nothing to do' (grey)
             if(action.isCompatible() && converter != null) {
                 CompatabilityCompatible compatabilityCompatible = converter.convert(action);
+                CompatibilityDataPlugin plug = GlobalConfiguration.all().get(CompatibilityDataPlugin.class);
 
-                 if(GlobalConfiguration.all().get(CompatibilityDataPlugin.class).getProvider() instanceof MongoProviderImpl) {
+                 if(plug != null && plug.getProvider() instanceof MongoProviderImpl) {
                     LOG.finest("Global configuration present, adding data to MongoDB");
-                    MongoProviderImpl impl =  ((MongoProviderImpl)GlobalConfiguration.all().get(CompatibilityDataPlugin.class).getProvider());
+                    MongoProviderImpl impl =  ((MongoProviderImpl)plug.getProvider());
                     impl.create(compatabilityCompatible);
                     LOG.finest(String.format("Done adding compatability information. Added compatability %s", compatabilityCompatible) );
                  }

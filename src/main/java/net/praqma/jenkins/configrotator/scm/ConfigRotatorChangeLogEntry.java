@@ -22,7 +22,7 @@ public class ConfigRotatorChangeLogEntry extends Entry implements Serializable {
      * Default constructor
      */
     public ConfigRotatorChangeLogEntry() {
-        versions = new ArrayList<ConfigRotatorVersion>();
+        versions = new ArrayList<>();
     }
 
     public ConfigRotatorChangeLogEntry(String commitMessage, String user, ArrayList<ConfigRotatorVersion> versions) {
@@ -38,7 +38,7 @@ public class ConfigRotatorChangeLogEntry extends Entry implements Serializable {
 
     @Override
     public Collection<String> getAffectedPaths() {
-        ArrayList<String> strings = new ArrayList<String>();
+        ArrayList<String> strings = new ArrayList<>();
         for (ConfigRotatorVersion ccv : getVersions()) {
             strings.add(ccv.getFile());
         }

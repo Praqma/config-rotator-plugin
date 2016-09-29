@@ -9,9 +9,10 @@ import java.util.List;
 /**
  *
  * @author Praqma
+ * @param <T> Entry
  */
 public class ConfigRotatorChangeLogSet<T extends ConfigRotatorChangeLogEntry> extends ChangeLogSet<T> {
-     
+
     protected List<T> entries;
     protected String headline;
     public static final String EMPTY_DESCRIPTOR = "New configuration - No changes";
@@ -35,17 +36,17 @@ public class ConfigRotatorChangeLogSet<T extends ConfigRotatorChangeLogEntry> ex
     public String toString() {
         return entries.toString();
     }
-    
+
     public ConfigRotatorChangeLogSet(AbstractBuild<?,?> build) {
         super(build);
-        entries = new ArrayList<T>();
+        entries = new ArrayList<>();
     }
 
     @Override
     public boolean isEmptySet() {
         return entries.isEmpty();
     }
-    
+
     /**
      * Adds the entry to the changelogset
      * @param entry The entry to add
@@ -56,5 +57,13 @@ public class ConfigRotatorChangeLogSet<T extends ConfigRotatorChangeLogEntry> ex
 
     public List<T> getEntries() {
         return entries;
+    }
+
+    public String getHeadline() {
+        return headline;
+    }
+
+    public void setHeadline(String headline) {
+        this.headline = headline;
     }
 }
