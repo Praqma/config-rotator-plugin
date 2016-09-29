@@ -115,14 +115,14 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
     }
 
     @Override
-    public Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) {
-        return new Poller(project, launcher, workspace, listener, false );
+    public Poller getPoller( AbstractProject<?, ?> project, FilePath workspace, TaskListener listener ) {
+        return new Poller(project, workspace, listener, false );
     }
 
 
     @Override
-    public Performer<ClearCaseUCMConfiguration> getPerform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException {
-        return new UCMPerformer(build, launcher, workspace, listener);
+    public Performer<ClearCaseUCMConfiguration> getPerform( AbstractBuild<?, ?> build, FilePath workspace, BuildListener listener ) throws IOException {
+        return new UCMPerformer(build, workspace, listener);
     }
 
     @Override
@@ -141,8 +141,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
     public class UCMPerformer extends Performer<ClearCaseUCMConfiguration> {
 
-        public UCMPerformer( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) {
-            super( build, launcher, workspace, listener );
+        public UCMPerformer( AbstractBuild<?, ?> build, FilePath workspace, BuildListener listener ) {
+            super( build, workspace, listener );
         }
 
         @Override

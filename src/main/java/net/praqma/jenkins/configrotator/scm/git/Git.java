@@ -41,13 +41,13 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
     }
 
     @Override
-    public Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) {
-        return new Poller(project, launcher, workspace, listener );
+    public Poller getPoller( AbstractProject<?, ?> project, FilePath workspace, TaskListener listener ) {
+        return new Poller(project, workspace, listener );
     }
 
     @Override
-    public Performer getPerform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException {
-        return new GitPerformer(build, launcher, workspace, listener);
+    public Performer getPerform( AbstractBuild<?, ?> build, FilePath workspace, BuildListener listener ) throws IOException {
+        return new GitPerformer(build, workspace, listener);
     }
 
     @Override
@@ -57,8 +57,8 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
     public class GitPerformer extends Performer<GitConfiguration> {
 
-        public GitPerformer( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) {
-            super( build, launcher, workspace, listener );
+        public GitPerformer( AbstractBuild<?, ?> build, FilePath workspace, BuildListener listener ) {
+            super( build, workspace, listener );
         }
 
         @Override
