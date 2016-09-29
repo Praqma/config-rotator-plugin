@@ -109,6 +109,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         }
 
         GitConfiguration configuration = action.getConfiguration();
+        List<GitTarget> tt = getTargets();
 
         /* Check if the project configuration is even set */
         if( configuration == null ) {
@@ -117,14 +118,14 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         }
 
         /* Check if the sizes are equal */
-        if( targets.size() != configuration.getList().size() ) {
+        if( tt.size() != configuration.getList().size() ) {
             LOGGER.fine( "Size was not equal" );
             return true;
         }
 
         /**/
-        for( int i = 0; i < targets.size(); ++i ) {
-            GitTarget t = targets.get( i );
+        for( int i = 0; i < tt.size(); i++ ) {
+            GitTarget t = tt.get( i );
             GitConfigurationComponent c = configuration.getList().get( i );
             if( !t.getBranch().equals( c.getBranch()) ||
                 !t.getRepository().equals( c.getRepository() ) ||
