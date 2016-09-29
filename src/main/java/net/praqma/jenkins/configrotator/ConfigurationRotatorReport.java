@@ -47,7 +47,7 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
 
     @Override
     public synchronized List<Action> getActions() {
-        List<Action> actions = new ArrayList<Action>();
+        List<Action> actions = new ArrayList<>();
         actions.add(new GitFeedAction());
         actions.add(new ClearCaseUCMFeedAction());
         return actions;

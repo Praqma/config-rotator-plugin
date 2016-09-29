@@ -7,6 +7,7 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
+import hudson.model.Descriptor;
 import hudson.model.TaskListener;
 import java.io.*;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Serializable {
 
-    private static final Logger LOGGER = Logger.getLogger( ClearCaseUCM.class.getName() );
+    private static final Logger logger = Logger.getLogger( ClearCaseUCM.class.getName() );
 
     public List<ClearCaseUCMTarget> targets;
 
@@ -83,8 +84,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
     }
 
     @Override
-    public boolean wasReconfigured( AbstractProject<?, ?> project, TaskListener listener ) {
-        LOGGER.finest( "Checking reconfiguration" );
+    public boolean wasReconfigured( AbstractProject<?, ?> project ) {
+        logger.finest( "Checking reconfiguration" );
 
         ConfigurationRotatorBuildAction action = getLastResult( project, ClearCaseUCM.class );
         DiedBecauseAction diedAction = getLastDieAction(project);
@@ -96,23 +97,21 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
         List<ClearCaseUCMTarget> list = getCompareTargets(project);
         List<ClearCaseUCMTarget> configTargets = getTargets();
-        listener.getLogger().println(ConfigurationRotator.LOGGERNAME+"Comparing configurations to see if it job reconfigured");
 
         /* Check if the sizes are equal */
         if( configTargets.size() != list.size() ) {
-            LOGGER.fine( "Size was not equal" );
+            logger.fine( "Size was not equal" );
             return true;
         }
 
         for( int i = 0; i < configTargets.size(); ++i ) {
-            listener.getLogger().println(ConfigurationRotator.LOGGERNAME+String.format( "Comparing (SCM Configuration Target) %s to (Previously Completed Build Target) %s", configTargets.get(i), list.get(i)));
-            LOGGER.fine(String.format( "Comparing (SCM Configuration Target) %s to (Previously Completed Build Target) %s", configTargets.get(i), list.get(i)) );
+            logger.fine(String.format( "Comparing (SCM Configuration Target) %s to (Previously Completed Build Target) %s", configTargets.get(i), list.get(i)) );
             if( !configTargets.get( i ).equals( list.get( i ) ) ) {
                 return true;
             }
         }
 
-        LOGGER.finest( "UCM was not reconfigured" );
+        logger.finest( "UCM was not reconfigured" );
         return false;
     }
 
@@ -167,14 +166,14 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         public void createWorkspace( ClearCaseUCMConfiguration configuration ) throws ConfigurationRotatorException {
             try {
                 out.println( ConfigurationRotator.LOGGERNAME + "Creating view" );
-                LOGGER.fine( "Creating view" );
+                logger.fine( "Creating view" );
                 SnapshotView view = createView( listener, build, configuration, workspace, pvob );
-                LOGGER.fine( String.format("Created view %s", view) );
+                logger.fine( String.format("Created view %s", view) );
                 configuration.setView( view );
             } catch( Exception e ) {
                 out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view" );
                 ConfigurationRotatorException ex = new ConfigurationRotatorException( "Unable to create view", e );
-                LOGGER.log(Level.SEVERE, "Unable to create view in createWorkspace()", ex);
+                logger.log(Level.SEVERE, "Unable to create view in createWorkspace()", ex);
                 throw ex;
             }
         }
@@ -186,8 +185,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
     }
 
     public void reconfigure( FilePath workspace, TaskListener listener ) throws IOException {
-        LOGGER.fine( "Getting configuration" );
-
         /* Resolve the configuration */
         ClearCaseUCMConfiguration inputconfiguration = null;
         try {
@@ -205,15 +202,15 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
     @Override
     public void printConfiguration( PrintStream out, AbstractConfiguration cfg ) {
         out.println( ConfigurationRotator.LOGGERNAME + "The configuration is:" );
-        LOGGER.fine( ConfigurationRotator.LOGGERNAME + "The configuration is:" );
+        logger.fine( ConfigurationRotator.LOGGERNAME + "The configuration is:" );
         if( cfg instanceof ClearCaseUCMConfiguration ) {
             ClearCaseUCMConfiguration config = (ClearCaseUCMConfiguration) cfg;
             for( ClearCaseUCMConfigurationComponent c : config.getList() ) {
                 out.println( " * " + c.getBaseline().getComponent() + ", " + c.getBaseline().getStream() + ", " + c.getBaseline().getNormalizedName() );
-                LOGGER.fine( " * " + c.getBaseline().getComponent() + ", " + c.getBaseline().getStream() + ", " + c.getBaseline().getNormalizedName() );
+                logger.fine( " * " + c.getBaseline().getComponent() + ", " + c.getBaseline().getStream() + ", " + c.getBaseline().getNormalizedName() );
             }
             out.println( "" );
-            LOGGER.fine( "" );
+            logger.fine( "" );
         }
     }
 
@@ -253,43 +250,35 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
         listener.getLogger().printf("%sUsing newsest baseline:%s%n", ConfigurationRotator.LOGGERNAME, isUseNewest());
 
-        ClearCaseUCMConfiguration nconfig;
-        try {
-            nconfig = ((ClearCaseUCMConfiguration) configuration).clone();
-        } catch (CloneNotSupportedException ex) {
-            LOGGER.log(Level.SEVERE, ConfigurationRotator.LOGGERNAME+"Unable to clone configuration", ex);
-            throw new ConfigurationRotatorException(String.format("Unable to clone configuration %s", configuration));
-        }
+        ClearCaseUCMConfiguration nconfig = ((ClearCaseUCMConfiguration) configuration).clone();
 
-        List<Baseline> changes = new ArrayList<>();
+        List<Baseline> changes = new ArrayList<Baseline>();
 
-        if(nconfig != null) {
-            for( ClearCaseUCMConfigurationComponent config : nconfig.getList() ) {
-                /* This configuration is not fixed */
-                if( !config.isFixed() ) {
-                    try {
-                        Baseline previous = config.getBaseline();
-                        current = workspace.act( new NextBaseline(
-                                config.getBaseline().getStream(),
-                                config.getBaseline().getComponent(),
-                                config.getPlevel(), config.getBaseline(), isUseNewest() ) );
+        for( ClearCaseUCMConfigurationComponent config : nconfig.getList() ) {
+            /* This configuration is not fixed */
+            if( !config.isFixed() ) {
+                try {
+                    Baseline previous = config.getBaseline();
+                    current = workspace.act( new NextBaseline(
+                            config.getBaseline().getStream(),
+                            config.getBaseline().getComponent(),
+                            config.getPlevel(), config.getBaseline(), isUseNewest() ) );
 
-                        if(isUseNewest()) {
-                            config.setChangedLast(true);
-                            config.setBaseline(current);
-                            changes.add(current);
-                            listener.getLogger().printf("%sBaseline switched from %s to %s%n", ConfigurationRotator.LOGGERNAME, previous, current);
-                        } else {
-                            if(oldest == null || current.getDate().before(oldest.getDate())) {
-                                oldest = current;
-                                chosen = config;
-                                config.setChangedLast(false);
-                            }
+                    if(isUseNewest()) {
+                        config.setChangedLast(true);
+                        config.setBaseline(current);
+                        changes.add(current);
+                        listener.getLogger().printf("%sBaseline switched from %s to %s%n", ConfigurationRotator.LOGGERNAME, previous, current);
+                    } else {
+                        if(oldest == null || current.getDate().before(oldest.getDate())) {
+                            oldest = current;
+                            chosen = config;
+                            config.setChangedLast(false);
                         }
-                    } catch( Exception e ) {
-                        /* No baselines found .get(0) above throws exception if no new baselines*/
-                        LOGGER.log(Level.FINE, ConfigurationRotator.LOGGERNAME + "No baselines found. Exception message follows", e );
                     }
+                } catch( Exception e ) {
+                    /* No baselines found .get(0) above throws exception if no new baselines*/
+                    logger.log(Level.FINE, ConfigurationRotator.LOGGERNAME + "No baselines found. Exception message follows", e );
                 }
             }
         }
@@ -311,14 +300,14 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
     }
 
     public SnapshotView createView( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
-        LOGGER.fine( "Getting project" );
+        logger.fine( "Getting project" );
         Project project = workspace.act( new DetermineProject( Arrays.asList( new String[]{ "jenkins", "Jenkins", "hudson", "Hudson" } ), pvob ) );
 
         /* Create baselines list */
         List<Baseline> selectedBaselines = new ArrayList<Baseline>();
-        LOGGER.fine( "Selected baselines:" );
+        logger.fine( "Selected baselines:" );
         for( ClearCaseUCMConfigurationComponent config : configuration.getList() ) {
-            LOGGER.fine( String.format( "Component: %s", config ) );
+            logger.fine( String.format( "Component: %s", config ) );
             selectedBaselines.add( config.getBaseline() );
         }
 
@@ -347,7 +336,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         }
     }
 
-    public  List<ClearCaseUCMTarget> getConfigurationAsTargets( ClearCaseUCMConfiguration config ) {
+    private List<ClearCaseUCMTarget> getConfigurationAsTargets( ClearCaseUCMConfiguration config ) {
         List<ClearCaseUCMTarget> list = new ArrayList<ClearCaseUCMTarget>();
         if( config.getList() != null && config.getList().size() > 0 ) {
             for( ClearCaseUCMConfigurationComponent c : config.getList() ) {
@@ -366,15 +355,13 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
     }
 
     @Override
-    public AbstractConfiguration setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
+    public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
         ClearCaseUCMConfiguration c = action.getConfiguration();
         if( c == null ) {
             throw new AbortException( ConfigurationRotator.LOGGERNAME + "Not a valid configuration" );
         } else {
-            LOGGER.fine(String.format("Configuration set to: %s", c));
             this.projectConfiguration = c;
             project.save();
-            return c;
         }
     }
 
@@ -395,8 +382,9 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
                 FilePath ws = build.getWorkspace();
                 if(ws != null) {
                     return ws.act( new ClearCaseGetBaseLineCompare(listener, configuration, component ) );
+                } else {
+                    return Collections.EMPTY_LIST;
                 }
-                return Collections.EMPTY_LIST;
             } catch( Exception e ) {
                 throw new ConfigurationRotatorException( e );
             }

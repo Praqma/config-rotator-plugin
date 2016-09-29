@@ -13,8 +13,7 @@ import java.util.Collection;
  */
 public class ConfigRotatorChangeLogEntry extends Entry implements Serializable {
 
-    protected transient ConfigRotatorChangeLogSet parent;
-    private static final long serialVersionUID = 10239349L;
+    protected ConfigRotatorChangeLogSet parent;
     private String commitMessage;
     private String user;
     private ArrayList<ConfigRotatorVersion> versions;
@@ -94,7 +93,6 @@ public class ConfigRotatorChangeLogEntry extends Entry implements Serializable {
         return (T) parent;
     }
 
-    @Override
     public String toString() {
         return user + " - " + commitMessage;
     }

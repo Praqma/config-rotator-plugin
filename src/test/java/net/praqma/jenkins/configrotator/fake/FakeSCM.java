@@ -42,7 +42,7 @@ public class FakeSCM extends AbstractConfigurationRotatorSCM {
 
     @Override
     public Performer getPerform( AbstractBuild<?, ?> build, FilePath workspace, BuildListener listener ) throws IOException {
-        return new FakePerformer(build,  workspace, listener);
+        return new FakePerformer(build, workspace, listener);
     }
 
     public class FakePerformer extends Performer<FakeConfiguration> {
@@ -121,13 +121,12 @@ public class FakeSCM extends AbstractConfigurationRotatorSCM {
     }
 
     @Override
-    public AbstractConfiguration setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
+    public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
         //To change body of implemented methods use File | Settings | File Templates.
-        return null;
     }
 
     @Override
-    public boolean wasReconfigured( AbstractProject<?, ?> project, TaskListener listener) {
+    public boolean wasReconfigured( AbstractProject<?, ?> project ) {
         if(project.getLastBuild() == null) {
             return true;
         }

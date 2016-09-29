@@ -38,7 +38,7 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
         return fileName.substring( 0, fileName.lastIndexOf( "." ) );
     }
 
-    public List<File> getComponents() {
+    public ArrayList<File> getComponents() {
         FileFilter xmlFilter = new FileFilter() {
             @Override
             public boolean accept(File file) {
@@ -59,15 +59,12 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
         return title;
     }
 
-    public List<File> getComponents( FileFilter filter ) {
-        List<File> list = new ArrayList<>();
-
+    public ArrayList<File> getComponents( FileFilter filter ) {
+        ArrayList<File> list = new ArrayList<>();
         File path = new File( ConfigurationRotator.getFeedPath(), getComponentName() );
-        if( filter != null) {
-            File[] flist = path.listFiles( filter );
-            if(flist != null) {
-                list = Arrays.asList(flist);
-            }
+        File[] files = path.listFiles( filter );
+        if(files != null) {
+            list.addAll(Arrays.asList(files));
         }
         return list;
     }
@@ -75,6 +72,7 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
     public void doFeed( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
         String component = req.getParameter( "component" );
         File file = new File( new File( ConfigurationRotator.getFeedPath(), getComponentName() ), component + ".xml" );
+
         if( file.exists() ) {
             rsp.serveFile( req, FileUtils.openInputStream( file ), file.lastModified(), file.getTotalSpace(), file.getName() );
         } else {

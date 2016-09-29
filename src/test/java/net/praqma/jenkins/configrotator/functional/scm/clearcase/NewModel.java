@@ -195,17 +195,16 @@ public class NewModel {
         AbstractBuild<?, ?> build1 = crrule.buildProject( project.getJenkinsProject(), false, null );
 
         /* Verify first build */
-        SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<>( build1 );
+        SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build1 );
         val.checkExpectedResult( Result.SUCCESS ).checkCompatability( true ).validate();
 
         /* Do the second build */
         AbstractBuild<?, ?> build2 = crrule.buildProject( project.getJenkinsProject(), false, null );
 
         /* Verify second build */
-        SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<>( build2 );
-        val2.checkTargets(
-                new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, true" ),
-                new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, true" ) )
-            .checkExpectedResult( Result.NOT_BUILT ).validate();
+        SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
+        val2.checkExpectedResult( Result.NOT_BUILT ).
+                checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, true" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, true" ) ).
+                validate();
     }
 }

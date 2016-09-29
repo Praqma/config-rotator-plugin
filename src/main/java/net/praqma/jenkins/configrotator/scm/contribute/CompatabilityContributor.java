@@ -22,9 +22,8 @@ import org.jenkinsci.remoting.RoleChecker;
 public class CompatabilityContributor implements Callable<Boolean, CompatibilityDataException> {
 
     private static final Logger LOG = Logger.getLogger(CompatabilityContributor.class.getName());
-    private static final long serialVersionUID = 1001L;
     private TaskListener listener;
-    private transient ConfigurationRotatorBuildAction action;
+    private ConfigurationRotatorBuildAction action;
     private ConfigRotatorCompatabilityConverter converter;
 
     public CompatabilityContributor() { }
@@ -41,14 +40,16 @@ public class CompatabilityContributor implements Callable<Boolean, Compatibility
             //Only add if the action is not 'Nothing to do' (grey)
             if(action.isCompatible() && converter != null) {
                 CompatabilityCompatible compatabilityCompatible = converter.convert(action);
-                CompatibilityDataPlugin plugin = GlobalConfiguration.all().get(CompatibilityDataPlugin.class);
-                if(plugin != null && plugin.getProvider() instanceof MongoProviderImpl) {
-                   LOG.finest("Global configuration present, adding data to MongoDB");
-                   MongoProviderImpl impl =  ((MongoProviderImpl)plugin.getProvider());
-                   impl.create(compatabilityCompatible);
-                   LOG.finest(String.format("Done adding compatability information. Added compatability %s", compatabilityCompatible) );
-                }
+                CompatibilityDataPlugin plug = GlobalConfiguration.all().get(CompatibilityDataPlugin.class);
+
+                 if(plug != null && plug.getProvider() instanceof MongoProviderImpl) {
+                    LOG.finest("Global configuration present, adding data to MongoDB");
+                    MongoProviderImpl impl =  ((MongoProviderImpl)plug.getProvider());
+                    impl.create(compatabilityCompatible);
+                    LOG.finest(String.format("Done adding compatability information. Added compatability %s", compatabilityCompatible) );
+                 }
             }
+
         }
 
         listener.getLogger().println("Added comptability in Remote!");

@@ -1,0 +1,60 @@
+<FindBugsFilter>
+
+	<!-- Ignore this for now. Fix when correct solution -->
+	<Match>
+		<Bug pattern="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"/>
+		<Method name="clone"/>
+	</Match>
+
+	<!-- Ignore this for now. Fix when correct solution -->
+	<Match>
+		<Bug pattern="EI_EXPOSE_REP2"/>		
+	</Match>
+	
+	<!-- Ignore this for now. Fix when correct solution -->
+	<Match>
+		<Bug pattern="EI_EXPOSE_REP"/>		
+	</Match>
+
+	<!-- Ignore this for now. Fix when correct solution -->
+	<Match>
+		<Bug pattern="HE_EQUALS_USE_HASHCODE"/>
+		<Or>
+			<Class name="net.praqma.jenkins.configrotator.scm.git.GitConfigurationComponent"/>			
+			<Class name="net.praqma.jenkins.configrotator.scm.git.GitConfiguration"/>			
+			<Class name="net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration"/>
+			<Class name="net.praqma.jenkins.configrotator.scm.git.GitTarget"/>
+			<Class name="net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget"/>
+			<Class name="net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent"/>
+		</Or>
+	</Match>
+	
+	<Match>
+		<Bug pattern="SE_BAD_FIELD"/>
+		<Or>
+			<Class name="net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry"/>
+			<Class name="net.praqma.jenkins.configrotator.scm.contribute.CompatabilityContributor"/>
+			<Class name="net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM"/>
+		</Or>
+	</Match>
+	
+	<Match>
+		<Bug pattern="NP_LOAD_OF_KNOWN_NULL_VALUE"/>
+		<Method name="compareRemoteRevisionWith"/>
+		<Class name="net.praqma.jenkins.configrotator.ConfigurationRotator"/>
+	</Match>
+	
+	<!-- Intentionally left non static. We always serialize the same value to database -->
+	<Match>
+		<Bug pattern="SS_SHOULD_BE_STATIC"/>
+		<Field name="schemaType"/>
+		<Class name="net.praqma.jenkins.configrotator.scm.contribute.ClearcaseUCMCompatability"/>
+	</Match>
+	
+	<Match>
+		<Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
+		<Class name="net.praqma.jenkins.configrotator.scm.git.GitConfigurationComponent"/>
+		<Field name="commit"/>
+	</Match>
+
+</FindBugsFilter>

@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author wolfgang
  */
-public abstract class AbstractConfigurationComponent implements Serializable, Feedable, Cloneable {
+public abstract class AbstractConfigurationComponent implements Serializable, Feedable {
     protected boolean changedLast = false;
     protected boolean fixed = false;
 

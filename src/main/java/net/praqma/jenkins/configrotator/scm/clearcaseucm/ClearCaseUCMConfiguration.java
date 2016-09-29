@@ -1,13 +1,13 @@
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import hudson.FilePath;
+import hudson.model.AbstractBuild;
 import hudson.model.TaskListener;
 import java.io.File;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,35 +22,30 @@ import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
 import org.eclipse.jgit.util.StringUtils;
 
-public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUCMConfigurationComponent> implements Cloneable {
+public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUCMConfigurationComponent> {
 
-    private static final Logger LOGGER = Logger.getLogger( ClearCaseUCMConfiguration.class.getName() );
+    private static final Logger logger = Logger.getLogger( ClearCaseUCMConfiguration.class.getName() );
     private SnapshotView view;
 
-    public ClearCaseUCMConfiguration() { super(); }
+    public ClearCaseUCMConfiguration() { }
 
-    public ClearCaseUCMConfiguration( final List<ClearCaseUCMConfigurationComponent> list ) {
-        super(list);
-    }
+
 
     @Override
-    public  ClearCaseUCMConfiguration clone() throws CloneNotSupportedException {
-        ClearCaseUCMConfiguration n = (ClearCaseUCMConfiguration)super.clone();
-        List<ClearCaseUCMConfigurationComponent> tmp = new ArrayList<>(this.list);
-        n.list = new ArrayList<>();
-        for (ClearCaseUCMConfigurationComponent cmp : tmp) {
-            n.list.add(cmp.clone());
+    public ClearCaseUCMConfiguration clone() {
+        ClearCaseUCMConfiguration n = new ClearCaseUCMConfiguration();
+
+        for( ClearCaseUCMConfigurationComponent cc : this.list ) {
+            n.list.add( cc.clone() );
         }
+
         return n;
     }
 
-    public List<ClearCaseUCMTarget> targetify() {
-        List<ClearCaseUCMTarget> targets = new ArrayList<>();
-        for(ClearCaseUCMConfigurationComponent c :  this.getList()) {
-            targets.add(new ClearCaseUCMTarget( c.getBaseline().getNormalizedName(), c.getPlevel(), c.isFixed() ));
-        }
-        return targets;
+    public ClearCaseUCMConfiguration( List<ClearCaseUCMConfigurationComponent> list ) {
+        this.list = list;
     }
+
 
     public void setView( SnapshotView view ) {
         this.view = view;
@@ -72,7 +67,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
 
             if( units.length == 3 ) {
                 try {
-                    ClearCaseUCMConfigurationComponent config = workspace.act( new GetConfiguration( units ) );
+                    ClearCaseUCMConfigurationComponent config = workspace.act( new GetConfiguration( units, listener ) );
                     configuration.list.add( config );
                     out.println( ConfigurationRotator.LOGGERNAME + "Parsed configuration: " + config );
                 } catch( InterruptedException e ) {
@@ -95,13 +90,6 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
     public String toString() {
         return list.toString();
     }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-
 
     @Override
     public boolean equals( Object other ) {
@@ -212,7 +200,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
                 entries.add( entry );
             }
         } catch( ClearCaseException e ) {
-            LOGGER.log( Level.WARNING, "Unable to generate change log entries", e );
+            logger.log( Level.WARNING, "Unable to generate change log entries", e );
         }
         return entries;
     }

@@ -100,6 +100,7 @@ public class ConfigurationRotator extends SCM {
         }
     }
 
+
     @Override
     public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
         PrintStream out = listener.getLogger();
@@ -110,8 +111,7 @@ public class ConfigurationRotator extends SCM {
            * Determine if the job was reconfigured
            */
         if( justConfigured ) {
-            reconfigure = acrs.wasReconfigured( build.getProject(), listener);
-            out.println(LOGGERNAME + "Project was reconfigured: "+reconfigure);
+            reconfigure = acrs.wasReconfigured( build.getProject() );
             LOGGER.fine( "Was reconfigured: " + reconfigure );
         }
 
@@ -205,10 +205,9 @@ public class ConfigurationRotator extends SCM {
         }
     }
 
-    public AbstractConfiguration setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
+    public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
+        acrs.setConfigurationByAction( project, action );
         justConfigured = true;
-        AbstractConfiguration acr = acrs.setConfigurationByAction( project, action );
-        return acr;
     }
 
     @Override
@@ -231,7 +230,7 @@ public class ConfigurationRotator extends SCM {
            * Determine if the job was reconfigured
            */
         if( justConfigured ) {
-            reconfigure = acrs.wasReconfigured( project, listener );
+            reconfigure = acrs.wasReconfigured( project );
             LOGGER.fine( "Was reconfigured: " + reconfigure );
         }
 
@@ -243,6 +242,7 @@ public class ConfigurationRotator extends SCM {
         try {
             if( reconfigure ) {
                 LOGGER.fine( "Reconfigured, build now!" );
+
                 out.println( LOGGERNAME + "Configuration from scratch, build now!" );
                 return PollingResult.BUILD_NOW;
             } else if( lastAction == null)  {
@@ -251,7 +251,9 @@ public class ConfigurationRotator extends SCM {
                     out.println( LOGGERNAME + "Error in configuration...do not start build" );
                     return PollingResult.NO_CHANGES;
                 } else {
-                    throw new AbortException("No changes");
+                    LOGGER.fine( "Do actual polling" );
+                    out.println( LOGGERNAME + "Getting next configuration" );
+                    return poller.poll( lastAction );
                 }
             } else {
                 LOGGER.fine( "Do actual polling" );
@@ -263,8 +265,6 @@ public class ConfigurationRotator extends SCM {
                     return poller.poll( lastAction );
                 }
             }
-        } catch ( AbortException ex) {
-            throw ex;
         } catch( Exception e ) {
             LOGGER.log( Level.SEVERE, "Unable to poll", e );
             throw new AbortException( e.getMessage() );
@@ -279,6 +279,11 @@ public class ConfigurationRotator extends SCM {
     @Override
     public ChangeLogParser createChangeLogParser() {
         return acrs.createChangeLogParser();
+    }
+
+    @Override
+    public boolean requiresWorkspaceForPolling() {
+        return acrs.requiresWorkspaceForPolling();
     }
 
     @Extension

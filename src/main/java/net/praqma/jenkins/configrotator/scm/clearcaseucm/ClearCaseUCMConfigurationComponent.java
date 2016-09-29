@@ -6,7 +6,7 @@ import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Project.PromotionLevel;
 import net.praqma.jenkins.configrotator.*;
 
-public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationComponent implements Cloneable {
+public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationComponent {
 
     private Baseline baseline;
     private PromotionLevel plevel;
@@ -22,13 +22,10 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
         this.baseline = Baseline.get( baseline ).load();
         this.plevel = Project.PromotionLevel.valueOf( plevel );
     }
-
+    
     @Override
-    public ClearCaseUCMConfigurationComponent clone() throws CloneNotSupportedException {
-        ClearCaseUCMConfigurationComponent cc = (ClearCaseUCMConfigurationComponent)super.clone();
-        cc.baseline = this.baseline;
-        cc.plevel = this.plevel;
-        cc.fixed = this.fixed;
+    public ClearCaseUCMConfigurationComponent clone() {
+        ClearCaseUCMConfigurationComponent cc = new ClearCaseUCMConfigurationComponent( this.baseline, this.plevel, this.fixed );
         return cc;
     }
 
@@ -53,19 +50,6 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
     public String prettyPrint() {
         return baseline.getNormalizedName() + "@" + plevel;
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        int bHash = baseline == null ? 0 : baseline.hashCode();
-        int pHash = plevel == null ? 0 : plevel.hashCode();
-        result = prime * result + bHash;
-        result = prime * result + pHash;
-        return result;
-    }
-
-
 
     @Override
     public boolean equals( Object other ) {

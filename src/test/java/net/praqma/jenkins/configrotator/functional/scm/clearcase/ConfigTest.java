@@ -29,10 +29,10 @@ import static org.junit.Assert.*;
 
 
 public class ConfigTest {
-
+	
 	@ClassRule
 	public static ConfigRotatorRule jenkins = new ConfigRotatorRule();
-
+	
 	@Rule
 	public static ClearCaseRule ccenv = new ClearCaseRule( "cr" );
 
@@ -90,11 +90,11 @@ public class ConfigTest {
         System.out.println(debugLine + "cr.reconfigure: " + cr.reconfigure);
         assertTrue(cr.reconfigure); //should initially be false, but now true
 
-
+        
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
-        try
+        try 
         {
             net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
@@ -182,10 +182,10 @@ public class ConfigTest {
         System.out.println(debugLine + "cr.justConfigured: " + cr.justConfigured);
         System.out.println(debugLine + "cr.reconfigure: " + cr.reconfigure);
         // These will be false, though we expect them to be true
-        // We can not detect the changes before build time, thus these will on be
+        // We can not detect the changes before build time, thus these will on be 
         // correct just after a build.
         // Something about we don't have the context when creating the new instance
-        // Conlusion: justConfigured will only be true just after creating a
+        // Conlusion: justConfigured will only be true just after creating a 
         // configrotator, but as soon a build is done the will be set false correctly
         // Thus, changing target will not make them true as expected!
         assertFalse(cr.justConfigured);
@@ -234,11 +234,11 @@ public class ConfigTest {
         // now after one successfull build, justconfigured should be false
         System.out.println(debugLine + "cr.justConfigured: " + cr.justConfigured);
         assertFalse(cr.justConfigured);
-
+        
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
-        try
+        try 
         {
             net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
@@ -248,7 +248,7 @@ public class ConfigTest {
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
-
+        
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
         // workspace after each test
@@ -269,7 +269,7 @@ public class ConfigTest {
         // Setup ClearCase UCM as SCM and to use with config-rotator
         ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-        // A first configuration added as targets: model-1 and client-1 that we
+        // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
         targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
         targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
@@ -338,11 +338,11 @@ public class ConfigTest {
         System.out.println(debugLine + "action.getResult(): " + action.getResult());
         assertEquals(action.getResult(), ConfigurationRotator.ResultType.FAILED);
 
-
+        
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
-        try
+        try 
         {
             net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
@@ -352,8 +352,8 @@ public class ConfigTest {
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
-
-
+        
+        
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
         // workspace after each test
@@ -373,7 +373,7 @@ public class ConfigTest {
         // Setup ClearCase UCM as SCM and to use with config-rotator
         ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-        // A first configuration added as targets: model-1 and client-1 that we
+        // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
         targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
         targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
@@ -493,7 +493,7 @@ public class ConfigTest {
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
-        try
+        try 
         {
             net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
@@ -502,8 +502,8 @@ public class ConfigTest {
             System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
-        System.out.println(debugLine + "Done calling teardown....");
-
+        System.out.println(debugLine + "Done calling teardown....");        
+        
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
         // workspace after each test
@@ -517,7 +517,7 @@ public class ConfigTest {
         String testName = "InputWrongTargetName";
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
-
+        
         // create Jenkins job - also use unique name
         FreeStyleProject project = jenkins.createProject(ccenv.getVobName());
         // Setup ClearCase UCM as SCM and to use with config-rotator
@@ -560,7 +560,7 @@ public class ConfigTest {
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
-        try
+        try 
         {
             net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
@@ -588,7 +588,7 @@ public class ConfigTest {
         System.out.println(debugLine + "Starting");
 
         // Make targets.... and test on those
-        // try constructor
+        // try constructor 
         System.out.println(debugLine + "Trying CCUCMtarget constructor - plain");
         ClearCaseUCMTarget target1 = new ClearCaseUCMTarget();
         // set component on it
@@ -608,7 +608,7 @@ public class ConfigTest {
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
-        try
+        try 
         {
             net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
@@ -618,7 +618,7 @@ public class ConfigTest {
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
-
+        
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
         // workspace after each test
@@ -638,7 +638,7 @@ public class ConfigTest {
         // Setup ClearCase UCM as SCM and to use with config-rotator
         ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-        // A first configuration added as targets: model-1 and client-1 that we
+        // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
         targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
         targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
@@ -651,8 +651,8 @@ public class ConfigTest {
         System.out.println(debugLine + "ccucm.getName():" + ccucm.getName());
         assertEquals("ClearCase UCM", ccucm.getName());
 
-        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project, TaskListener.NULL));
-        assertTrue(ccucm.wasReconfigured(project, TaskListener.NULL)); // because targets just added
+        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
+        assertTrue(ccucm.wasReconfigured(project)); // because targets just added
 
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
@@ -661,8 +661,8 @@ public class ConfigTest {
         System.out.println(debugLine + "Set ConfigurationRotator as SCM");
         project.setScm(cr);
 
-        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project, TaskListener.NULL));
-        assertTrue(ccucm.wasReconfigured(project, TaskListener.NULL)); // still not builded yet
+        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
+        assertTrue(ccucm.wasReconfigured(project)); // still not builded yet
 
         // Try to build
         System.out.println(debugLine + "Scheduling a build ...");
@@ -682,26 +682,26 @@ public class ConfigTest {
         System.out.println(debugLine + "build.getResult():" + b.getResult().toString());
         assertEquals(b.getResult(), Result.SUCCESS);
 
-        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project, TaskListener.NULL));
-        assertFalse(ccucm.wasReconfigured(project, TaskListener.NULL)); // now it should not just be reconfigured
+        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
+        assertFalse(ccucm.wasReconfigured(project)); // now it should not just be reconfigured
 
         // change targets
         System.out.println(debugLine + "clearing targets on ccucm");
         ccucm.targets.clear();
-        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project, TaskListener.NULL));
-        assertTrue(ccucm.wasReconfigured(project, TaskListener.NULL)); // true, just removed targets
+        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
+        assertTrue(ccucm.wasReconfigured(project)); // true, just removed targets
 
         System.out.println(debugLine + "adding one target to ccucm");
         ccucm.targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
-        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project, TaskListener.NULL));
-        assertTrue(ccucm.wasReconfigured(project, TaskListener.NULL)); // true, just added a target
-        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project, TaskListener.NULL));
-        assertTrue(ccucm.wasReconfigured(project, TaskListener.NULL)); // still, should be same result ?
+        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
+        assertTrue(ccucm.wasReconfigured(project)); // true, just added a target
+        System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
+        assertTrue(ccucm.wasReconfigured(project)); // still, should be same result ?
 
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
-        try
+        try 
         {
             net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
@@ -731,7 +731,7 @@ public class ConfigTest {
         // Setup ClearCase UCM as SCM and to use with config-rotator
         ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-        // A first configuration added as targets: model-1 and client-1 that we
+        // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
         targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
         targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
@@ -797,12 +797,12 @@ public class ConfigTest {
         assertEquals("/plugin/config-rotator/images/rotate.png", crpa.getIconFileName());
         //assertEquals("config-rotator", crpa.getSearchUrl());
         assertEquals("config-rotator", crpa.getUrlName());
-
-
+        
+        
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
-        try
+        try 
         {
             net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
@@ -836,7 +836,7 @@ public class ConfigTest {
         // Setup ClearCase UCM as SCM and to use with config-rotator
         ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-        // A first configuration added as targets: model-1 and client-1 that we
+        // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
         targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
         targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
@@ -897,7 +897,7 @@ public class ConfigTest {
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
-        try
+        try 
         {
             net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
@@ -933,7 +933,7 @@ public class ConfigTest {
         // Setup ClearCase UCM as SCM and to use with config-rotator
         ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-        // A first configuration added as targets: model-1 and client-1 that we
+        // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
         targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, true"));
         targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
@@ -1062,7 +1062,7 @@ public class ConfigTest {
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
-        try
+        try 
         {
             net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
@@ -1080,8 +1080,8 @@ public class ConfigTest {
         waiting(watingSeconds);
 
     }
-
-
+    
+    
     @ClearCaseUniqueVobName( name = "iterateall" )
     //@Test
     public void testManualIterateThroughAllBaselines() throws Exception {
@@ -1098,7 +1098,7 @@ public class ConfigTest {
         // Setup ClearCase UCM as SCM and to use with config-rotator
         ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-        // A first configuration added as targets: model-1 and client-1 that we
+        // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
         targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
         targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
@@ -1344,7 +1344,7 @@ public class ConfigTest {
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
-        try
+        try 
         {
             net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }

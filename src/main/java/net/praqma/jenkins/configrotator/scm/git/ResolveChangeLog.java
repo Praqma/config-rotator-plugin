@@ -74,7 +74,7 @@ public class ResolveChangeLog implements FilePath.FileCallable<ConfigRotatorChan
         }
 
         ConfigRotatorChangeLogEntry entry = new ConfigRotatorChangeLogEntry( commit.getFullMessage(), commit.getAuthorIdent().getName(), new ArrayList<ConfigRotatorVersion>());
-        if (diffs != null) {
+        if(diffs != null) {
             for( DiffEntry diff : diffs ) {
                 entry.addVersion( new ConfigRotatorVersion( diff.getNewPath(), "", commit.getAuthorIdent().getName() ) );
             }

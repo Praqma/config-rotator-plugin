@@ -4,19 +4,11 @@ import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractConfiguration<T extends AbstractConfigurationComponent> implements Serializable {
     public abstract List<ConfigRotatorChangeLogEntry> difference( T component, T other ) throws ConfigurationRotatorException;
 
-    protected List<T> list = new ArrayList<>();
-
-    public AbstractConfiguration() {
-    }
-
-    public AbstractConfiguration(List<T> list) {
-        this.list = list;
-    }
+    protected List<T> list = new ArrayList<T>();
 
     protected String description = null;
 

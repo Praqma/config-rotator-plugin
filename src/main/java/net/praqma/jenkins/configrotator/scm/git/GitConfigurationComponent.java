@@ -3,20 +3,18 @@ package net.praqma.jenkins.configrotator.scm.git;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.IOException;
-import java.util.Objects;
 
-public class GitConfigurationComponent extends AbstractConfigurationComponent implements Cloneable {
+public class GitConfigurationComponent extends AbstractConfigurationComponent {
 
-    public static final long serialVersionUID = 101;
+    static final long serialVersionUID = 5857L;
     private String commitId;
     private String name;
     private String branch;
     private String repository;
 
-    private GitConfigurationComponent( String name, String repository, String branch, String commitId, boolean fixed ) {
+    public GitConfigurationComponent( String name, String repository, String branch, String commitId, boolean fixed ) {
         super( fixed );
         this.name = name;
         this.repository = repository;
@@ -24,18 +22,8 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent im
         this.commitId = commitId;
     }
 
-    public GitConfigurationComponent( String name, String repository, String branch, RevCommit commit, boolean fixed ) {
-        super( fixed );
-        if( commit != null ) {
-            this.commitId = commit.getName();
-        }
-        this.name = name;
-        this.branch = branch;
-        this.repository = repository;
-    }
-
     public void checkout( FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
-        workspace.act( new Checkout( name,  branch, commitId ) );
+        workspace.act( new Checkout( name, branch, commitId ) );
     }
 
     public String getBranch() {
@@ -64,13 +52,8 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent im
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        GitConfigurationComponent gcc = (GitConfigurationComponent)super.clone();
-        gcc.name = this.name;
-        gcc.repository = this.repository;
-        gcc.branch = this.branch;
-        gcc.commitId = this.commitId;
-        gcc.fixed = this.fixed;
+    protected Object clone() {
+        GitConfigurationComponent gcc = new GitConfigurationComponent( name, repository, branch, commitId, fixed );
         return  gcc;
     }
 
@@ -82,11 +65,6 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent im
     @Override
     public String getFeedName() {
         return repository;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(commitId, name, repository);
     }
 
     @Override
@@ -110,15 +88,14 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent im
 
     @Override
     public String prettyPrint() {
-        return name + ": " + repository + ", " + branch + ", " + commitId;
+        return String.format("[%s] %s", name, commitId);
     }
 
     @Override
     public String toHtml() {
-
         StringBuilder builder = new StringBuilder();
-
         return getBasicHtml( builder, new Element( repository, isChangedLast() ), new Element( branch, isChangedLast() ), new Element( commitId, isChangedLast() ), new Element( fixed+"", isChangedLast() ) );
     }
+
 
 }

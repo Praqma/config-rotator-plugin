@@ -66,6 +66,10 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         this.useNewest = useNewest;
     }
 
+    protected boolean requiresWorkspaceForPolling() {
+        return true;
+    }
+
     /**
      *
      * @param <C> AbstractConfiguration
@@ -149,6 +153,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
             this.build = build;
             this.workspace = workspace;
             this.listener = listener;
+
             this.out = listener.getLogger();
         }
 
@@ -173,9 +178,9 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         }
     }
 
-    public abstract AbstractConfiguration setConfigurationByAction(AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action) throws IOException;
+    public abstract void setConfigurationByAction(AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action) throws IOException;
 
-    public abstract boolean wasReconfigured(AbstractProject<?, ?> project, TaskListener listener);
+    public abstract boolean wasReconfigured(AbstractProject<?, ?> project);
 
     public abstract ConfigRotatorChangeLogParser createChangeLogParser();
 
@@ -238,7 +243,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         public void write(List<ConfigRotatorChangeLogEntry> entries) {
             PrintWriter writer = null;
             try {
-                writer = new PrintWriter(changeLogFile, "utf-8");
+                writer = new PrintWriter(changeLogFile, "UTF-8");
                 writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 writer.println("<changelog>");
 
@@ -302,12 +307,8 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
     }
 
     public DiedBecauseAction getLastDieAction(AbstractProject<?, ?> project) {
-        AbstractBuild<?, ?> ab = project.getLastBuild();
-        if(ab == null) {
-            return null;
-        } else {
-            return ab.getAction(DiedBecauseAction.class);
-        }
+        AbstractBuild<?,?> b = project.getLastBuild();
+        return b != null ? b.getAction(DiedBecauseAction.class) : null;
     }
 
     public ConfigurationRotatorBuildAction getPreviousResult(AbstractBuild<?, ?> build, Class<? extends AbstractConfigurationRotatorSCM> clazz) {

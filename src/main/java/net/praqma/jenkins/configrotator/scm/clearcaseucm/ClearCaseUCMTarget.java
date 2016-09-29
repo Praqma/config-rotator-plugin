@@ -3,7 +3,6 @@ package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.util.ListBoxModel;
-import java.util.Objects;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.jenkins.configrotator.AbstractTarget;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -15,7 +14,8 @@ public class ClearCaseUCMTarget extends AbstractTarget<ClearCaseUCMTarget> {
     private Project.PromotionLevel level;
     private boolean fixed;
 
-    public ClearCaseUCMTarget() { }
+    public ClearCaseUCMTarget() {
+    }
 
     /**
      * Warning: Only one databound constructor per component. Figured this out
@@ -25,10 +25,6 @@ public class ClearCaseUCMTarget extends AbstractTarget<ClearCaseUCMTarget> {
      */
     public ClearCaseUCMTarget(String component) {
         this.component = component;
-        String[] split = component.split(",");
-        this.baselineName = split[0].trim();
-        this.level = Project.PromotionLevel.valueOf(split[1].trim());
-        this.fixed = Boolean.parseBoolean(split[2].trim());
     }
 
     /**
@@ -82,11 +78,6 @@ public class ClearCaseUCMTarget extends AbstractTarget<ClearCaseUCMTarget> {
     @Override
     public String toString() {
         return String.format("%s", component);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(component, baselineName, level);
     }
 
     @Override
