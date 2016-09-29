@@ -184,9 +184,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
     }
 
     public void reconfigure( FilePath workspace, TaskListener listener ) throws IOException {
-        logger.fine( "Getting configuration" );
-        PrintStream out = listener.getLogger();
-
         /* Resolve the configuration */
         ClearCaseUCMConfiguration inputconfiguration = null;
         try {

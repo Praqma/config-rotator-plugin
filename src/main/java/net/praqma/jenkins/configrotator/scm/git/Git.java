@@ -158,9 +158,13 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         protected List<ConfigRotatorChangeLogEntry> getChangeLogEntries( GitConfiguration configuration, GitConfigurationComponent configurationComponent ) throws ConfigurationRotatorException {
             LOGGER.fine( "Change log entry, " + configurationComponent );
             try {
-                ConfigRotatorChangeLogEntry entry = build.getWorkspace().act( new ResolveChangeLog( configurationComponent.getName(), configurationComponent.getCommitId() ) );
-                LOGGER.fine("ENTRY: " + entry);
-                return Collections.singletonList( entry );
+                FilePath ws = build.getWorkspace();
+                if(ws != null) {
+                    ConfigRotatorChangeLogEntry entry = ws.act( new ResolveChangeLog( configurationComponent.getName(), configurationComponent.getCommitId() ) );
+                    LOGGER.fine("ENTRY: " + entry);
+                    return Collections.singletonList( entry );
+                }
+                return Collections.EMPTY_LIST;
             } catch( Exception e ) {
                 throw new ConfigurationRotatorException( "Unable to resolve changelog " + configurationComponent.getCommitId(), e );
             }

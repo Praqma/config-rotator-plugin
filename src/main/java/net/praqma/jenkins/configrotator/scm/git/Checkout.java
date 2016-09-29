@@ -37,7 +37,7 @@ public class Checkout implements FilePath.FileCallable<Boolean> {
 
 
         try {
-            Ref r = git.checkout().setName( branch ).setAllPaths( true ).setForce( true ).setStartPoint( commitId ).call();
+            git.checkout().setName( branch ).setAllPaths( true ).setForce( true ).setStartPoint( commitId ).call();
         } catch( GitAPIException e ) {
             throw new IOException( e );
         } finally {

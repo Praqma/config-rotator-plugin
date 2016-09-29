@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.praqma.util.xml.feed.*;
+import org.apache.commons.io.output.FileWriterWithEncoding;
 
 /**
  * <p>
@@ -154,7 +155,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
      *
      * @param feed feed
      * @throws IOException when an error occurs (General)
-     * @throws FeedException when error in feeed
+     * @throws FeedException when error in feed
      */
     private void writeFeedToFile( Feed feed, File feedFile ) throws FeedException {
         Writer writer = null;
@@ -168,9 +169,9 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                 }
             }
 
-            writer = new FileWriter( feedFile );
+            writer = new FileWriterWithEncoding( feedFile, "UTF-8" );
             writer.write( feed.getXML( new AtomPublisher() ) );
-            writer.close();
+
         } catch( IOException ex ) {
             if( writer != null ) {
                 try {
@@ -181,6 +182,14 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                 }
             } else {
                 localListener.getLogger().println( "ConfigRotator RunListener - writeFeedToFile: writer  WAS NULL, caught IOException meaning feed may not have been written " + " Exception was: " + ex.getMessage() );
+            }
+        } finally {
+            if(writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    //NOOP We don't really care here
+                }
             }
         }
     }

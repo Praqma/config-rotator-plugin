@@ -61,9 +61,10 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
 
     public ArrayList<File> getComponents( FileFilter filter ) {
         ArrayList<File> list = new ArrayList<>();
-        if(filter != null) {
-            File path = new File( ConfigurationRotator.getFeedPath(), getComponentName() );
-            list.addAll(Arrays.asList(path.listFiles( filter )));
+        File path = new File( ConfigurationRotator.getFeedPath(), getComponentName() );
+        File[] files = path.listFiles( filter );
+        if(files != null) {
+            list.addAll(Arrays.asList(files));
         }
         return list;
     }
