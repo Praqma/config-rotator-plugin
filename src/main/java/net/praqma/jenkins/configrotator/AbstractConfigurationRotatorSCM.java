@@ -245,7 +245,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         public void write(List<ConfigRotatorChangeLogEntry> entries) {
             PrintWriter writer = null;
             try {
-                writer = new PrintWriter(new FileWriter(changeLogFile));
+                writer = new PrintWriter(changeLogFile, "UTF-8");
                 writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 writer.println("<changelog>");
 
@@ -309,7 +309,8 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
     }
 
     public DiedBecauseAction getLastDieAction(AbstractProject<?, ?> project) {
-        return project.getLastBuild() != null ? project.getLastBuild().getAction(DiedBecauseAction.class) : null;
+        AbstractBuild<?,?> b = project.getLastBuild();
+        return b != null ? b.getAction(DiedBecauseAction.class) : null;
     }
 
     public ConfigurationRotatorBuildAction getPreviousResult(AbstractBuild<?, ?> build, Class<? extends AbstractConfigurationRotatorSCM> clazz) {
