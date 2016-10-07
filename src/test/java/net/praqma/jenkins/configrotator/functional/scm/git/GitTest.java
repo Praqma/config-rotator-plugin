@@ -47,7 +47,7 @@ public class GitTest {
         git.initialize( folder.newFolder() );
         RevCommit commit1 = git.createCommit( "text.txt", "1" );
 
-        ProjectBuilder builder = new ProjectBuilder( new Git(new ArrayList<GitTarget>(), false) ).setName( "git-test-01" );
+        ProjectBuilder builder = new ProjectBuilder( new Git(new ArrayList<GitTarget>()) ).setName( "git-test-01" );
         ConfigRotatorProject project = builder.getProject();
         project.addTarget( new GitTarget( "test", git.getRepo(), "master", commit1.getName(), false ) );
 
@@ -70,7 +70,7 @@ public class GitTest {
         git.initialize( folder.newFolder() );
         RevCommit commit1 = git.createCommit( "text.txt", "1" );
 
-        ProjectBuilder builder = new ProjectBuilder( new Git(new ArrayList<GitTarget>(), false) ).setName( "git-test-02" );
+        ProjectBuilder builder = new ProjectBuilder( new Git(new ArrayList<GitTarget>()) ).setName( "git-test-02" );
         ConfigRotatorProject project = builder.getProject();
         project.addTarget( new GitTarget( "test", git.getRepo(), "master", commit1.getName(), false ) );
 
@@ -100,7 +100,7 @@ public class GitTest {
         RevCommit commit1 = git.createCommit( "text.txt", "1" );
         RevCommit commit2 = git.createCommit( "text.txt", "2" );
 
-        ProjectBuilder builder = new ProjectBuilder( new Git(new ArrayList<GitTarget>(), false) ).setName( "git-test-03" );
+        ProjectBuilder builder = new ProjectBuilder( new Git(new ArrayList<GitTarget>()) ).setName( "git-test-03" );
         ConfigRotatorProject project = builder.getProject();
         project.addTarget( new GitTarget( "test", git.getRepo(), "master", commit1.getName(), false ) );
 
@@ -131,7 +131,7 @@ public class GitTest {
         String tagName = "configRotator";
         git.createTag(tagName);
 
-        ProjectBuilder builder = new ProjectBuilder(new Git(new ArrayList<GitTarget>(), false)).setName("git-test-04");
+        ProjectBuilder builder = new ProjectBuilder(new Git(new ArrayList<GitTarget>())).setName("git-test-04");
         ConfigRotatorProject project = builder.getProject();
         project.addTarget(new GitTarget("test", git.getRepo(), "master", tagName, false));
 
@@ -159,7 +159,7 @@ public class GitTest {
         git.createTag(tagName);
         RevCommit commit3 = git.createCommit("text.txt", "3");
 
-        ProjectBuilder builder = new ProjectBuilder(new Git(new ArrayList<GitTarget>(), false)).setName("git-test-JENKINS22533");
+        ProjectBuilder builder = new ProjectBuilder(new Git(new ArrayList<GitTarget>())).setName("git-test-JENKINS22533");
         ConfigRotatorProject project = builder.getProject();
 
         GitTarget t = new GitTarget("test", git.getRepo(), "master", tagName, false);

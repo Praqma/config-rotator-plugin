@@ -35,7 +35,7 @@ class ClearCaseJobDslContext implements Context {
         useNewest = value;
     }
 
-    List<ClearCaseUCMTarget> targets = new ArrayList<>();
+    List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
 
     public void target(Runnable closure) {
         ClearCaseTargetJobDslContext context = new ClearCaseTargetJobDslContext();
