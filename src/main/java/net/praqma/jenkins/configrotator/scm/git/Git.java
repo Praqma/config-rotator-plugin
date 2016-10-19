@@ -184,7 +184,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
             if( !config.isFixed() ) {
                 try {
                     LOGGER.fine("Config: " + config);
-                    RevCommit commit = workspace.act( new ResolveNextCommit( config.getName(), config.getCommitId() ) );
+                    RevCommit commit = workspace.act( new ResolveNextCommit( config.getName(), config.getCommitId(), config.getBranch() ) );
                     if( commit != null ) {
                         LOGGER.fine( "Current commit: " + commit.getName() );
                         LOGGER.fine( "Current commit: " + commit.getCommitTime() );

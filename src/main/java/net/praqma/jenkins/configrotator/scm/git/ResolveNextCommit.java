@@ -20,10 +20,20 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
     private String name;
     private String branch = "git";
     private static final Logger LOGGER = Logger.getLogger( ResolveNextCommit.class.getName() );
+
+    public ResolveNextCommit(String name, String commitId, String branch) {
+        this.commitId = commitId;
+        this.name = name;
+        this.branch = branch;
+    }
+
+    @Deprecated
     public ResolveNextCommit( String name, String commitId ) {
         this.commitId = commitId;
         this.name = name;
     }
+
+
 
     @Override
     public RevCommit invoke( File workspace, VirtualChannel virtualChannel ) throws IOException, InterruptedException {
@@ -47,7 +57,7 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
             w = new RevWalk( repo );
 
-            ObjectId ohead = repo.resolve( "HEAD" );
+            ObjectId ohead = repo.resolve( "refs/remotes/origin/"+branch );
             ObjectId ostart = repo.resolve( commitId );
             RevCommit commithead = w.parseCommit( ohead );
             RevCommit commit = w.parseCommit( ostart );
