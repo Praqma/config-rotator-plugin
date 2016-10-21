@@ -16,23 +16,12 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
     private String branch;
     private String repository;
 
-    private GitConfigurationComponent( String name, String repository, String branch, String commitId, boolean fixed ) {
+    public GitConfigurationComponent( String name, String repository, String branch, String commitId, boolean fixed ) {
         super( fixed );
         this.name = name;
         this.repository = repository;
         this.branch = branch;
         this.commitId = commitId;
-    }
-
-    public GitConfigurationComponent( String name, String repository, String branch, RevCommit commit, boolean fixed ) {
-        super( fixed );
-        this.commit = commit;
-        if( commit != null ) {
-            this.commitId = commit.getName();
-        }
-        this.name = name;
-        this.branch = branch;
-        this.repository = repository;
     }
 
     public void checkout( FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
@@ -110,9 +99,7 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
 
     @Override
     public String toHtml() {
-
         StringBuilder builder = new StringBuilder();
-
         return getBasicHtml( builder, new Element( repository, isChangedLast() ), new Element( branch, isChangedLast() ), new Element( commitId, isChangedLast() ), new Element( fixed+"", isChangedLast() ) );
     }
 

@@ -41,7 +41,6 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
         this.branch = branch;
         this.commitId = commitId;
         this.fixed = fixed;
-
         this.listener = listener;
     }
 
@@ -154,8 +153,7 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
         File local = safeClone(workspace);
         RevCommit commit = createBranchAndPull(local);
 
-
-        return new GitConfigurationComponent( name, repository, branch, commit, fixed );
+        return new GitConfigurationComponent( name, repository, branch, commit.getName(), fixed );
 
     }
 
