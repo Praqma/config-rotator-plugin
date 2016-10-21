@@ -15,7 +15,6 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
@@ -106,7 +105,7 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
                 //This needs to be ignored.
             }
 
-            git.pull().call();
+            git.fetch().call();
 
             w = new RevWalk( repo );
 
@@ -158,13 +157,6 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
 
         return new GitConfigurationComponent( name, repository, branch, commit, fixed );
 
-    }
-
-    private void listPath( PrintStream logger, File path ) {
-        logger.println( "PATH: " + path );
-        for( String f : path.list() ) {
-            logger.println( " * " + f );
-        }
     }
 
     @Override
