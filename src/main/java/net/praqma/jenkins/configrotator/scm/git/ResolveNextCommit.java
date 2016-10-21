@@ -33,8 +33,6 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
         this.name = name;
     }
 
-
-
     @Override
     public RevCommit invoke( File workspace, VirtualChannel virtualChannel ) throws IOException, InterruptedException {
 
@@ -52,8 +50,7 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
             git = new org.eclipse.jgit.api.Git( repo );
 
             LOGGER.fine( String.format( "Updating to %s", branch ) );
-            LOGGER.fine( "Pulling" );
-            git.pull().call();
+            git.fetch().call();
 
             w = new RevWalk( repo );
 
