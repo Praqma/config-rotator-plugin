@@ -38,7 +38,7 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
         for( AbstractConfigurationComponent configuration : l ) {
             if( configuration.isChangedLast() ) {
                 int i = l.indexOf( configuration );
-                indicies.add(i);                
+                indicies.add(i);
             }
         }
 
@@ -56,7 +56,7 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
 
     public abstract String toHtml();
 
-    
+
     public String getDescription( ConfigurationRotatorBuildAction action ) {
         if( description == null ) {
             ConfigurationRotator rotator = (ConfigurationRotator) action.getBuild().getProject().getScm();
@@ -66,20 +66,20 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
                 ConfigurationRotatorBuildAction previous = rotator.getAcrs().getPreviousResult( action.getBuild(), null );
                 List<Integer> changes = getChangedComponentIndecies();
                 List<AbstractConfigurationComponent> changedComps = getChangedComponents();
-                
+
                 StringBuilder builder = new StringBuilder();
                 for(Integer i : changes) {
                    String c = String.format( "%s<br/>%s%n", ((T)previous.getConfigurationWithOutCast().getList().get( i) ).prettyPrint(), changedComps.get(i).prettyPrint() );
                    builder.append(c);
                 }
-                
+
                 return builder.toString();
             }
         }
 
         return description;
     }
-    
+
 
     public String basicHtml( StringBuilder builder, String ... titles ) {
 

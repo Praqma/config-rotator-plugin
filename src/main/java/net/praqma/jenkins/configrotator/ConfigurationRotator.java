@@ -100,6 +100,7 @@ public class ConfigurationRotator extends SCM {
         }
     }
 
+
     @Override
     public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
         PrintStream out = listener.getLogger();
@@ -278,6 +279,11 @@ public class ConfigurationRotator extends SCM {
     @Override
     public ChangeLogParser createChangeLogParser() {
         return acrs.createChangeLogParser();
+    }
+
+    @Override
+    public boolean requiresWorkspaceForPolling() {
+        return acrs.requiresWorkspaceForPolling();
     }
 
     @Extension

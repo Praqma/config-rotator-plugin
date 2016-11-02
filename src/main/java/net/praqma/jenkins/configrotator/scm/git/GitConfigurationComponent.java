@@ -94,7 +94,7 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
 
     @Override
     public String prettyPrint() {
-        return name + ": " + repository + ", " + branch + ", " + commitId;
+        return String.format("[%s] %s", name, commitId);
     }
 
     @Override
@@ -102,5 +102,6 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
         StringBuilder builder = new StringBuilder();
         return getBasicHtml( builder, new Element( repository, isChangedLast() ), new Element( branch, isChangedLast() ), new Element( commitId, isChangedLast() ), new Element( fixed+"", isChangedLast() ) );
     }
+
 
 }

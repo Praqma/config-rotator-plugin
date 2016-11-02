@@ -33,8 +33,9 @@ public class Checkout implements FilePath.FileCallable<Boolean> {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         Repository repo = builder.setGitDir( new File( local, ".git" ) ).readEnvironment().findGitDir().build();
         org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git( repo );
-        
+
         try {
+            git.checkout().setForce(true).setName( branch ).call();
             git.checkout().setForce(true).setName( commitId ).call();
         } catch( GitAPIException e ) {
             throw new IOException( e );

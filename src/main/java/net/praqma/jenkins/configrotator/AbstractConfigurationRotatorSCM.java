@@ -66,6 +66,10 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         this.useNewest = useNewest;
     }
 
+    protected boolean requiresWorkspaceForPolling() {
+        return true;
+    }
+
     /**
      *
      * @param <C> AbstractConfiguration

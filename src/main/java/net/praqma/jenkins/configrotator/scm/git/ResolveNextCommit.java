@@ -19,12 +19,15 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
     private String commitId;
     private String name;
     private String branch = "git";
+    private String repoUrl;
+
     private static final Logger LOGGER = Logger.getLogger( ResolveNextCommit.class.getName() );
 
-    public ResolveNextCommit(String name, String commitId, String branch) {
+    public ResolveNextCommit(String name, String commitId, String branch, String repoUrl) {
         this.commitId = commitId;
         this.name = name;
         this.branch = branch;
+        this.repoUrl = repoUrl;
     }
 
     @Deprecated
@@ -39,11 +42,17 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
         //Resources
         Repository repo = null;
         org.eclipse.jgit.api.Git git = null;
+
         RevWalk w = null;
         RevCommit next = null;
 
         try {
             File local = new File( workspace, name );
+
+            if(!local.exists()) {
+                org.eclipse.jgit.api.Git.cloneRepository().setURI(repoUrl).setDirectory(local).call().getRepository().close();
+            }
+
             FileRepositoryBuilder builder = new FileRepositoryBuilder();
             LOGGER.fine( "Initializing repo" );
             repo = builder.setGitDir( new File( local, ".git" ) ).readEnvironment().findGitDir().build();

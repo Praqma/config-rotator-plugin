@@ -89,4 +89,27 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
         StringBuilder builder = new StringBuilder();
         return basicHtml( builder, "Repository", "Branch", "Commit", "Fixed" );
     }
+
+    @Override
+    public String getDescription( ConfigurationRotatorBuildAction action ) {
+        if( description == null ) {
+            ConfigurationRotator rotator = (ConfigurationRotator) action.getBuild().getProject().getScm();
+            if( getChangedComponents().isEmpty() ) {
+                return "New Configuration - no changes yet";
+            } else {
+                ConfigurationRotatorBuildAction previous = rotator.getAcrs().getPreviousResult( action.getBuild(), null );
+                List<Integer> changes = getChangedComponentIndecies();
+
+                StringBuilder builder = new StringBuilder();
+                for(Integer i : changes) {
+                   String c = String.format( "%s --> %s%n", (previous.getConfiguration().getList().get( i) ).prettyPrint(), getList().get(i).prettyPrint() );
+                   builder.append(c);
+                }
+
+                return builder.toString();
+            }
+        }
+
+        return description;
+    }
 }

@@ -3,16 +3,15 @@ package net.praqma.jenkins.configrotator.scm.git;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
-import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
+import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.servlet.ServletException;
@@ -20,9 +19,12 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.praqma.jenkins.configrotator.scm.contribute.ConfigRotatorCompatabilityConverter;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 public class Git extends AbstractConfigurationRotatorSCM implements Serializable {
 
@@ -36,13 +38,18 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
     }
 
     @Override
+    public boolean requiresWorkspaceForPolling() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return "Git repository";
     }
 
     @Override
     public Poller getPoller( AbstractProject<?, ?> project, FilePath workspace, TaskListener listener ) {
-        return new Poller(project, workspace, listener );
+        return new GitPoller(project, workspace, listener );
     }
 
     @Override
@@ -53,6 +60,30 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
     @Override
     public ConfigRotatorCompatabilityConverter getConverter() {
         return null;
+    }
+
+    public class GitPoller extends Poller<GitConfiguration> {
+
+        public GitPoller(AbstractProject<?, ?> project, FilePath workspace, TaskListener listener) {
+            super(project, workspace, listener);
+        }
+
+        @Override
+        public PollingResult poll(ConfigurationRotatorBuildAction action) throws AbortException {
+            try {
+                AbstractConfiguration configuration = action.getConfiguration();
+                if(hasChanges(listener, configuration, workspace)) {
+                    return PollingResult.BUILD_NOW;
+                }
+                return PollingResult.NO_CHANGES;
+            } catch (ConfigurationRotatorException ex) {
+                listener.error("Error caught while polling");
+                listener.error(ex.getMessage());
+                LOGGER.log(Level.SEVERE, "Error caught while polling", ex);
+                return PollingResult.NO_CHANGES;
+            }
+        }
+
     }
 
     public class GitPerformer extends Performer<GitConfiguration> {
@@ -171,6 +202,31 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         }
     }
 
+    private boolean hasChanges(TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
+        GitConfiguration nconfig = ((GitConfiguration) configuration).clone();
+
+        /* Find oldest commit, newer than current */
+        for( GitConfigurationComponent config : nconfig.getList() ) {
+            if( !config.isFixed() ) {
+                try {
+                    LOGGER.fine("Config: " + config);
+
+                    Map<String,Ref> remoteHeads = org.eclipse.jgit.api.Git.lsRemoteRepository().setRemote(config.getRepository()).callAsMap();
+                    Ref branchHead = remoteHeads.get("refs/heads/"+config.getBranch());
+
+                    if(!config.getCommitId().equals(branchHead.getObjectId().getName())) {
+                        return true;
+                    }
+
+                } catch( Exception e ) {
+                    LOGGER.log( Level.FINE, "No commit found", e );
+                }
+
+            }
+        }
+        return false;
+    }
+
     @Override
     public AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
         LOGGER.fine( "Getting next Git configuration: " + configuration);
@@ -184,7 +240,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
             if( !config.isFixed() ) {
                 try {
                     LOGGER.fine("Config: " + config);
-                    RevCommit commit = workspace.act( new ResolveNextCommit( config.getName(), config.getCommitId(), config.getBranch() ) );
+                    RevCommit commit = workspace.act( new ResolveNextCommit( config.getName(), config.getCommitId(), config.getBranch(), config.getRepository() ) );
                     if( commit != null ) {
                         LOGGER.fine( "Current commit: " + commit.getName() );
                         LOGGER.fine( "Current commit: " + commit.getCommitTime() );
