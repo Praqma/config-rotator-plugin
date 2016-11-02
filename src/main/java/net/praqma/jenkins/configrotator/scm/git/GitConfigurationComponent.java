@@ -3,14 +3,12 @@ package net.praqma.jenkins.configrotator.scm.git;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.IOException;
 
 public class GitConfigurationComponent extends AbstractConfigurationComponent {
 
     static final long serialVersionUID = 5857L;
-    private transient RevCommit commit;
     private String commitId;
     private String name;
     private String branch;
@@ -25,7 +23,7 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
     }
 
     public void checkout( FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
-        workspace.act( new Checkout( name,  branch, commitId ) );
+        workspace.act( new Checkout( name, branch, commitId ) );
     }
 
     public String getBranch() {
@@ -38,10 +36,6 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
 
     public String getName() {
         return name;
-    }
-
-    public RevCommit getCommit() {
-        return commit;
     }
 
     public void setCommitId( String commitId ) {
