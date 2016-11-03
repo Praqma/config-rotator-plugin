@@ -72,6 +72,12 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         public PollingResult poll(ConfigurationRotatorBuildAction action) throws AbortException {
             try {
                 AbstractConfiguration configuration = action.getConfiguration();
+
+                //Prevent 'Nothing to do' builds on long checkouts
+                if(project.isBuilding()) {
+                    return PollingResult.NO_CHANGES;
+                }
+
                 if(hasChanges(listener, configuration, workspace)) {
                     return PollingResult.BUILD_NOW;
                 }
