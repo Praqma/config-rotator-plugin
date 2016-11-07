@@ -52,14 +52,16 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
             File local = new File( workspace, name );
 
-            if(!local.exists()) {
-                local.mkdirs();
-                LOGGER.fine("Cloning "+repo);
-                GitClient c = org.jenkinsci.plugins.gitclient.Git.with(TaskListener.NULL, EnvVars.getRemote(virtualChannel)).using("git").in(local).getClient();
-                c.clone_().url(repoUrl).execute();
-                LOGGER.fine(repo + " cloned sucessfully");
+            if(local.mkdirs()) {
+                LOGGER.fine("Created workdir for component "+name);
             }
 
+            GitClient gc = org.jenkinsci.plugins.gitclient.Git.with(TaskListener.NULL, EnvVars.getRemote(virtualChannel)).using("git").in(local).getClient();
+            if(!gc.hasGitRepo()) {
+                LOGGER.fine("Cloning "+repoUrl);
+                gc.clone_().url(repoUrl).execute();
+                LOGGER.fine(repo + " cloned sucessfully");
+            }
 
             FileRepositoryBuilder builder = new FileRepositoryBuilder();
             LOGGER.fine( "Initializing repo" );

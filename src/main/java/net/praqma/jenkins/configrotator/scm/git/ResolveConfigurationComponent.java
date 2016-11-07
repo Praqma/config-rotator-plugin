@@ -125,10 +125,15 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
         }
 
         File local = new File(workspace, name);
+
+        if(local.mkdirs()) {
+            LOGGER.fine("Created repo for component "+name);
+        }
+
         GitClient c = org.jenkinsci.plugins.gitclient.Git.with(listener, EnvVars.getRemote(channel)).using("git").in(local).getClient();
 
-        if(!local.exists()) {
-            local.mkdirs();
+        if(!c.hasGitRepo()) {
+
             LOGGER.fine("Cloning "+repository);
             c.clone_().url(repository).execute();
             LOGGER.fine(repository + " cloned sucessfully");
