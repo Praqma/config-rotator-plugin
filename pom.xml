@@ -352,6 +352,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git-client</artifactId>
+            <version>1.21.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>net.praqma</groupId>
             <artifactId>praqmajutils</artifactId>
             <version>${praqmajutils.version}</version>
@@ -385,15 +391,6 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>4.4.1.201607150455-r</version>
-        </dependency>
-
-
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>

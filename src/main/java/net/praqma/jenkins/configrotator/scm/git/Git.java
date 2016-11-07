@@ -1,14 +1,25 @@
 package net.praqma.jenkins.configrotator.scm.git;
 
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.CertificateCredentials;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
+import hudson.model.ItemGroup;
 import hudson.model.TaskListener;
 import hudson.scm.PollingResult;
+import hudson.security.ACL;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
@@ -23,18 +34,31 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.praqma.jenkins.configrotator.scm.contribute.ConfigRotatorCompatabilityConverter;
-import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.jenkinsci.plugins.gitclient.GitClient;
+import org.kohsuke.stapler.AncestorInPath;
+import org.kohsuke.stapler.DataBoundSetter;
 
 public class Git extends AbstractConfigurationRotatorSCM implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger( Git.class.getName() );
+    private String credentialId;
 
     private List<GitTarget> targets = new ArrayList<>();
 
     @DataBoundConstructor
     public Git(List<GitTarget> targets) {
         this.targets = targets;
+    }
+
+    public String getCredentialId() {
+        return credentialId;
+    }
+
+    @DataBoundSetter
+    public void setCredentialId(String credentialId) {
+        this.credentialId = credentialId;
     }
 
     @Override
@@ -78,7 +102,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
                     return PollingResult.NO_CHANGES;
                 }
 
-                if(hasChanges(listener, configuration, workspace)) {
+                if(hasChanges(listener, configuration, credentialId, project)) {
                     return PollingResult.BUILD_NOW;
                 }
                 return PollingResult.NO_CHANGES;
@@ -86,6 +110,9 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
                 listener.error("Error caught while polling");
                 listener.error(ex.getMessage());
                 LOGGER.log(Level.SEVERE, "Error caught while polling", ex);
+                return PollingResult.NO_CHANGES;
+            } catch (IOException | InterruptedException ex) {
+                Logger.getLogger(Git.class.getName()).log(Level.SEVERE, null, ex);
                 return PollingResult.NO_CHANGES;
             }
         }
@@ -208,19 +235,16 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         }
     }
 
-    private boolean hasChanges(TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
+    private boolean hasChanges(TaskListener listener, AbstractConfiguration configuration, String credentials, AbstractProject<?,?> project) throws ConfigurationRotatorException, IOException, InterruptedException {
         GitConfiguration nconfig = ((GitConfiguration) configuration).clone();
-
+        GitClient c = org.jenkinsci.plugins.gitclient.Git.with(listener, null).using("git").getClient();
         /* Find oldest commit, newer than current */
         for( GitConfigurationComponent config : nconfig.getList() ) {
             if( !config.isFixed() ) {
                 try {
-                    LOGGER.fine("Config: " + config);
-
-                    Map<String,Ref> remoteHeads = org.eclipse.jgit.api.Git.lsRemoteRepository().setRemote(config.getRepository()).callAsMap();
-                    Ref branchHead = remoteHeads.get("refs/heads/"+config.getBranch());
-
-                    if(!config.getCommitId().equals(branchHead.getObjectId().getName())) {
+                    Map<String, ObjectId> remoteHeads = c.getRemoteReferences(config.getRepository(), "refs/heads/"+config.getBranch(), true, false);
+                    ObjectId branchHead = remoteHeads.get("refs/heads/"+config.getBranch());
+                    if(!config.getCommitId().equals(branchHead.getName())) {
                         return true;
                     }
 
@@ -240,6 +264,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         RevCommit oldest = null;
         GitConfigurationComponent chosen = null;
         GitConfiguration nconfig = ((GitConfiguration) configuration).clone();
+
 
         /* Find oldest commit, newer than current */
         for( GitConfigurationComponent config : nconfig.getList() ) {
@@ -287,7 +312,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
 
     private List<GitTarget> getConfigurationAsTargets( GitConfiguration config ) {
-        List<GitTarget> list = new ArrayList<GitTarget>();
+        List<GitTarget> list = new ArrayList<>();
         if( config.getList() != null && config.getList().size() > 0 ) {
             for( GitConfigurationComponent c : config.getList() ) {
                 if( c != null ) {
@@ -338,10 +363,21 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
         public List<GitTarget> getTargets( Git instance ) {
             if( instance == null ) {
-                return new ArrayList<GitTarget>();
+                return new ArrayList<>();
             } else {
                 return instance.getTargets();
             }
         }
+
+        public ListBoxModel doFillCredentialIdItems(final @AncestorInPath ItemGroup<?> context) {
+            final List<StandardCredentials> credentials = CredentialsProvider.lookupCredentials(StandardCredentials.class, context, ACL.SYSTEM, Collections.<DomainRequirement>emptyList());
+
+            return new StandardListBoxModel()
+                    .withEmptySelection()
+                    .withMatching(CredentialsMatchers.anyOf(
+                                    CredentialsMatchers.instanceOf(StandardUsernamePasswordCredentials.class)
+                            ), credentials);
+        }
+
     }
 }

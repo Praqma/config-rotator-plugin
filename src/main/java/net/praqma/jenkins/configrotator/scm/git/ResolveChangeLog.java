@@ -66,7 +66,7 @@ public class ResolveChangeLog implements FilePath.FileCallable<ConfigRotatorChan
                 repo.close();
             }
             if(w != null) {
-                w.close();
+                w.release();
             }
             if(repo != null) {
                 repo.close();

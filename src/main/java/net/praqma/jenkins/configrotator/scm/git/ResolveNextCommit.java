@@ -1,6 +1,8 @@
 package net.praqma.jenkins.configrotator.scm.git;
 
+import hudson.EnvVars;
 import hudson.FilePath;
+import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -12,6 +14,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
+import org.jenkinsci.plugins.gitclient.GitClient;
 import org.jenkinsci.remoting.RoleChecker;
 
 public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
@@ -20,6 +23,7 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
     private String name;
     private String branch = "git";
     private String repoUrl;
+    private String credentials;
 
     private static final Logger LOGGER = Logger.getLogger( ResolveNextCommit.class.getName() );
 
@@ -38,20 +42,25 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
     @Override
     public RevCommit invoke( File workspace, VirtualChannel virtualChannel ) throws IOException, InterruptedException {
-
         //Resources
         Repository repo = null;
         org.eclipse.jgit.api.Git git = null;
-
         RevWalk w = null;
         RevCommit next = null;
 
         try {
+
             File local = new File( workspace, name );
 
             if(!local.exists()) {
-                org.eclipse.jgit.api.Git.cloneRepository().setURI(repoUrl).setDirectory(local).call().getRepository().close();
+                if(local.mkdirs()) {
+                    LOGGER.fine("Cloning "+repo);
+                    GitClient c = org.jenkinsci.plugins.gitclient.Git.with(TaskListener.NULL, EnvVars.getRemote(virtualChannel)).using("git").in(local).getClient();
+                    c.clone_().url(repoUrl).execute();
+                    LOGGER.fine(repo + " cloned sucessfully");
+                }
             }
+
 
             FileRepositoryBuilder builder = new FileRepositoryBuilder();
             LOGGER.fine( "Initializing repo" );
@@ -98,7 +107,7 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
                 repo.close();
             }
             if(w != null) {
-                w.close();
+                w.release();
                 w.dispose();
             }
 
