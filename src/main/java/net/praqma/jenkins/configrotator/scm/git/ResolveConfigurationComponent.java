@@ -71,7 +71,7 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
 
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         try {
-            client.checkout().branch("origin/"+branch).execute();
+            client.checkout().deleteBranchIfExist(true).branch("origin/"+branch).execute();
             repo = builder.setGitDir( new File( localClone, ".git" ) ).readEnvironment().findGitDir().build();
             git = new org.eclipse.jgit.api.Git( repo );
 
