@@ -128,6 +128,7 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
         GitClient c = org.jenkinsci.plugins.gitclient.Git.with(listener, EnvVars.getRemote(channel)).using("git").in(local).getClient();
 
         if(!local.exists()) {
+            local.mkdirs();
             LOGGER.fine("Cloning "+repository);
             c.clone_().url(repository).execute();
             LOGGER.fine(repository + " cloned sucessfully");
