@@ -56,7 +56,7 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
                 LOGGER.fine("Created workdir for component "+name);
             }
 
-            GitClient gc = org.jenkinsci.plugins.gitclient.Git.with(TaskListener.NULL, EnvVars.getRemote(virtualChannel)).using("git").in(local).getClient();
+            GitClient gc = org.jenkinsci.plugins.gitclient.Git.with(TaskListener.NULL, null).using("git").in(local).getClient();
             if(!gc.hasGitRepo()) {
                 LOGGER.fine("Cloning "+repoUrl);
                 gc.clone_().url(repoUrl).execute();

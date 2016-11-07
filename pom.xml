@@ -71,10 +71,6 @@
             <url>http://code.praqma.net/repo/maven/</url>
         </repository>
 
-        <repository>
-            <id>jgit-repository</id>
-            <url>http://download.eclipse.org/jgit/maven</url>
-        </repository>
     </repositories>
 
     <!-- Needed to resolve the Jenkins-ci hpi package plugin -->
@@ -341,7 +337,6 @@
         <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.11</version>
                 <scope>test</scope>
         </dependency>
 
@@ -391,6 +386,7 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
