@@ -62,16 +62,16 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
         }
     }
 
-    private RevCommit createBranchAndPull(File localClone, GitClient client) throws IOException, URISyntaxException {
+    private ObjectId createBranchAndPull(File localClone, GitClient client) throws IOException, URISyntaxException {
         //Init repository
-        RevCommit commit = null;
         Repository repo = null;
         org.eclipse.jgit.api.Git git = null;
         RevWalk w = null;
+        ObjectId o = null;
 
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         try {
-            client.checkout().deleteBranchIfExist(true).branch("origin/"+branch).execute();
+            client.checkoutBranch(branch, commitId);
             repo = builder.setGitDir( new File( localClone, ".git" ) ).readEnvironment().findGitDir().build();
             git = new org.eclipse.jgit.api.Git( repo );
 
@@ -87,9 +87,8 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
             }
 
             LOGGER.fine( String.format("Getting commit '%s'", commitId ) );
-            ObjectId o = repo.resolve( commitId );
-            commit = w.parseCommit( o );
-            LOGGER.fine( String.format( "RevCommit: %s", commit ) );
+            o = repo.resolve( commitId );
+            RevCommit commit = w.parseCommit( o );
         } catch (IOException io) {
             throw io;
         } catch (GitException ex) {
@@ -109,7 +108,7 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
                 git.close();
             }
         }
-        return commit;
+        return o;
     }
 
     @Override
@@ -138,7 +137,7 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
             LOGGER.fine(repository + " cloned sucessfully");
         }
 
-        RevCommit commit;
+        ObjectId commit;
         try {
             commit = createBranchAndPull(local, c);
         } catch (URISyntaxException ex) {
