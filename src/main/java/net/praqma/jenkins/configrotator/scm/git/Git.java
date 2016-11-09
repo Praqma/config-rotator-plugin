@@ -298,7 +298,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         LOGGER.fine( "Oldest valid commit: " + oldest );
         if( chosen != null && oldest != null ) {
             LOGGER.fine( "There was a new commit: " + oldest );
-            listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "Next commit: " + chosen );
+            listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "Next commit: " + oldest.getName() );
             chosen.setCommitId( oldest.getName() );
             chosen.setChangedLast( true );
         } else {
