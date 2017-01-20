@@ -29,13 +29,21 @@ import static java.lang.System.*;
 public class ConfigurationRotator extends SCM {
 
     private AbstractConfigurationRotatorSCM acrs;
+    private static final Logger LOGGER = Logger.getLogger( ConfigurationRotator.class.getName() );
 
     /**
-     * Just for backwards compatibility.
+     * @return the justConfigured
      */
-    private boolean printDebug = false;
+    public boolean isJustConfigured() {
+        return justConfigured;
+    }
 
-    private static final Logger LOGGER = Logger.getLogger( ConfigurationRotator.class.getName() );
+    /**
+     * @param justConfigured the justConfigured to set
+     */
+    public void setJustConfigured(boolean justConfigured) {
+        this.justConfigured = justConfigured;
+    }
 
     public enum ResultType {
         COMPATIBLE,
@@ -47,7 +55,7 @@ public class ConfigurationRotator extends SCM {
     public static final String URL_NAME = "config-rotator";
     public static final String NAME = "ConfigRotator";
     public static final String LOGGERNAME = "[" + NAME + "] ";
-    public boolean justConfigured = false;
+    private boolean justConfigured = false;
 
     public static final String SEPARATOR = getProperty( "file.separator" );
     public static final String FEED_DIR = "config-rotator-feeds" + SEPARATOR;
@@ -112,6 +120,7 @@ public class ConfigurationRotator extends SCM {
            */
         if( justConfigured ) {
             reconfigure = acrs.wasReconfigured( build.getProject() );
+            listener.getLogger().println("Was reconfigured: "+reconfigure);
             LOGGER.fine( "Was reconfigured: " + reconfigure );
         }
 

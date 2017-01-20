@@ -1,6 +1,5 @@
 package net.praqma.jenkins.configrotator.scm.git;
 
-import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
@@ -23,7 +22,6 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
     private String name;
     private String branch = "git";
     private String repoUrl;
-    private String credentials;
 
     private static final Logger LOGGER = Logger.getLogger( ResolveNextCommit.class.getName() );
 
@@ -58,9 +56,7 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
             GitClient gc = org.jenkinsci.plugins.gitclient.Git.with(TaskListener.NULL, null).using("git").in(local).getClient();
             if(!gc.hasGitRepo()) {
-                LOGGER.fine("Cloning "+repoUrl);
                 gc.clone_().url(repoUrl).execute();
-                LOGGER.fine(repo + " cloned sucessfully");
             }
 
             FileRepositoryBuilder builder = new FileRepositoryBuilder();
@@ -75,6 +71,7 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
             ObjectId ohead = repo.resolve( "refs/remotes/origin/"+branch );
             ObjectId ostart = repo.resolve( commitId );
+
             RevCommit commithead = w.parseCommit( ohead );
             RevCommit commit = w.parseCommit( ostart );
 

@@ -89,6 +89,8 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
             LOGGER.fine( String.format("Getting commit '%s'", commitId ) );
             o = repo.resolve( commitId );
             RevCommit commit = w.parseCommit( o );
+            o = commit.getId();
+            listener.getLogger().println(String.format("Getting commit: '%s' resolved to: '%s", commitId, o.getName()));
         } catch (IOException io) {
             throw io;
         } catch (GitException ex) {

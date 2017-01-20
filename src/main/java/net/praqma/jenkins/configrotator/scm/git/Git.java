@@ -102,7 +102,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
                     return PollingResult.NO_CHANGES;
                 }
 
-                if(hasChanges(listener, configuration, credentialId, project)) {
+                if(hasChanges(listener, configuration)) {
                     return PollingResult.BUILD_NOW;
                 }
                 return PollingResult.NO_CHANGES;
@@ -235,7 +235,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         }
     }
 
-    private boolean hasChanges(TaskListener listener, AbstractConfiguration configuration, String credentials, AbstractProject<?,?> project) throws ConfigurationRotatorException, IOException, InterruptedException {
+    private boolean hasChanges(TaskListener listener, AbstractConfiguration configuration) throws ConfigurationRotatorException, IOException, InterruptedException {
         GitConfiguration nconfig = ((GitConfiguration) configuration).clone();
         GitClient c = org.jenkinsci.plugins.gitclient.Git.with(listener, null).using("git").getClient();
         /* Find oldest commit, newer than current */
@@ -247,7 +247,6 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
                     if(!config.getCommitId().equals(branchHead.getName())) {
                         return true;
                     }
-
                 } catch( Exception e ) {
                     LOGGER.log( Level.FINE, "No commit found", e );
                 }
@@ -309,7 +308,6 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
         return nconfig;
     }
-
 
     private List<GitTarget> getConfigurationAsTargets( GitConfiguration config ) {
         List<GitTarget> list = new ArrayList<>();
