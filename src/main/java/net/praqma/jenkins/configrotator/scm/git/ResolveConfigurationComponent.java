@@ -127,7 +127,6 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
         } catch (GitAPIException ex) {
             throw new IOException(ex);
         } finally {
-
             if(repo != null) {
                 repo.close();
             }

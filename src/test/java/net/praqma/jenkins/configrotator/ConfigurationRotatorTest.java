@@ -7,9 +7,7 @@ import hudson.model.*;
 import hudson.tasks.Publisher;
 import hudson.util.DescribableList;
 import net.praqma.jenkins.configrotator.fake.FakeSCM;
-import net.praqma.util.test.junit.LoggingRule;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -18,15 +16,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ConfigurationRotatorTest {
-
-    @ClassRule
-    public static LoggingRule lrule = new LoggingRule( Level.ALL, "net.praqma" );
 
     /* Typical jenkins objects */
     AbstractProject<?, ?> project;
